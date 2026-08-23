@@ -281,8 +281,13 @@
     "ao", "aos", "à", "às",
   ]);
 
-  // Title Case em português: capitaliza palavras principais, mantém preposições/
-  // conjunções/artigos curtos em minúsculo (exceto quando são a primeira palavra).
+  /**
+   * Converte para Title Case em português: capitaliza palavras principais e
+   * mantém preposições/conjunções/artigos curtos em minúsculo, exceto quando
+   * são a primeira palavra.
+   * @param {string} value
+   * @returns {string}
+   */
   function toTitleCasePt(value) {
     const raw = String(value || "").trim();
     if (!raw) return "";
@@ -1380,8 +1385,13 @@
     });
   }
 
-  // Parseia HTML sem anexar ao documento e sem disparar efeitos colaterais
-  // (carregamento de imagem, onerror/onload) que um `div.innerHTML =` causaria.
+  /**
+   * Extrai o texto puro de uma string HTML sem anexá-la ao documento, evitando
+   * efeitos colaterais (carregamento de imagem, onerror/onload) que um
+   * `div.innerHTML =` causaria.
+   * @param {string} html
+   * @returns {string}
+   */
   function safePlainTextFromHtml(html) {
     const raw = String(html || "");
     if (!raw) return "";
@@ -1403,8 +1413,12 @@
   ];
   const CARD_HTML_ALLOWED_ATTR = ["href", "src", "alt", "loading", "style", "target", "rel"];
 
-  // Sanitiza HTML de cartões (conteúdo do usuário e/ou gerado por IA) contra XSS,
-  // permitindo apenas as tags/atributos que o editor de texto rico realmente produz.
+  /**
+   * Sanitiza HTML de cartões contra XSS, permitindo apenas as tags/atributos
+   * que o editor de texto rico realmente produz.
+   * @param {string} html
+   * @returns {string} HTML sanitizado, ou string vazia se o DOMPurify não estiver disponível.
+   */
   function sanitizeCardHtml(html) {
     const dirty = String(html || "");
     if (!dirty) return "";
@@ -1414,7 +1428,7 @@
         ALLOWED_ATTR: CARD_HTML_ALLOWED_ATTR,
       });
     }
-    // DOMPurify indisponível (ex.: CDN bloqueado) — falha fechado, sem HTML.
+    // DOMPurify indisponível (ex.: CDN bloqueado) — falha fechado, sem renderizar HTML.
     return escapeHtml(safePlainTextFromHtml(dirty));
   }
 
@@ -2962,6 +2976,11 @@
   }
 
   // ─── "Descobrir Cards" — permissão de admin ──────────────
+  /**
+   * Verifica se o usuário atual tem papel ADMIN, usando o cache de sessão
+   * (válido por 30 minutos) antes de consultar o banco.
+   * @returns {Promise<boolean>}
+   */
   async function isCurrentUserAdmin() {
     try {
       await window.adminGuardPromise;
@@ -3095,7 +3114,7 @@
     if (!elements.discoverSubjectsList) return;
     elements.discoverSubjectsList.innerHTML = "";
     const counts = await fetchDiscoverMateriaCounts(area.id);
-    if (discoverAreaId !== area.id) return; // usuário já navegou pra outro lugar
+    if (discoverAreaId !== area.id) return; // usuário já navegou para outro lugar
 
     elements.discoverSubjectsList.innerHTML = "";
     area.subjects.forEach((materiaId) => {
@@ -3178,7 +3197,7 @@
     const area = getDiscoverArea(discoverAreaId);
     const conteudos = getContentsForMateria(materiaId);
     const counts = await fetchDiscoverConteudoCounts(discoverAreaId, materiaId);
-    if (discoverMateriaId !== materiaId) return; // usuário já navegou pra outro lugar
+    if (discoverMateriaId !== materiaId) return; // usuário já navegou para outro lugar
 
     elements.discoverContentsList.innerHTML = "";
     if (!conteudos.length) {
@@ -3275,7 +3294,7 @@
     elements.discoverTopicsList.innerHTML = "";
     const area = getDiscoverArea(discoverAreaId);
     const counts = await fetchDiscoverTopicoCounts(discoverAreaId, discoverMateriaId, conteudo);
-    if (discoverConteudoId !== conteudo) return; // usuário já navegou pra outro lugar
+    if (discoverConteudoId !== conteudo) return; // usuário já navegou para outro lugar
 
     elements.discoverTopicsList.innerHTML = "";
     topicos.forEach((topico) => {
@@ -3854,7 +3873,7 @@
     if (!discoverConteudoId) return;
     // Atualiza a tela de cards se for a que está realmente visível agora (é o
     // caso mais comum, já que editar/excluir só é possível a partir dela).
-    // Só cai pra tela de tópicos se ela é que está aberta no momento.
+    // Só recai para a tela de tópicos se ela é que está aberta no momento.
     if (elements.discoverCardsView && !elements.discoverCardsView.hidden) {
       renderDiscoverCards();
       return;

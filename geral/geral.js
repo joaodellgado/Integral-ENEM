@@ -46,9 +46,13 @@
     return { key, label: raw || "Outros", color: "var(--s-def)", cssVar: "--s-def" };
   }
 
-  // Extrai a chave de disciplina do campo "notes" das cronograma_entries
-  // (formato: "Matemática • 30 questões • 15 acertos").
-  // Usado como fallback para entradas antigas sem a coluna "subject".
+  /**
+   * Extrai a chave de disciplina do campo `notes` de cronograma_entries
+   * (formato "Matemática • 30 questões • 15 acertos"). Usado como fallback
+   * para entradas antigas que não possuem a coluna `subject`.
+   * @param {string} notes
+   * @returns {string|null} Chave da disciplina, ou null se não identificada.
+   */
   function resolveSubjectKeyFromNotes(notes) {
     const label = normalizeKey(String(notes || "").split("•")[0]);
     if (!label) return null;
@@ -191,12 +195,18 @@
   }
 
   /* ─── Data fetching ─────────────────────────────────── */
+  /**
+   * Busca respostas de questões do usuário e agrega totais por disciplina.
+   * @param {string|null} userId
+   * @param {string|null} periodStart Data ISO de início do período, ou null para todo o histórico.
+   * @returns {Promise<{total: number, acertos: number, bySubject: Object}>}
+   */
   async function fetchQuestionsData(userId, periodStart) {
     const client = window.supabaseClient;
     if (!client || !userId) return { total: 0, acertos: 0, bySubject: {} };
 
     try {
-      // JOIN em uma única query: elimina o segundo SELECT questions WHERE id IN (...)
+      // JOIN em uma única query, evitando um segundo SELECT em questions WHERE id IN (...)
       let q = client
         .from("lista_respostas")
         .select("correta, questao_id, respondida_em, questions(disciplina)")
@@ -227,6 +237,12 @@
     }
   }
 
+  /**
+   * Busca entradas do cronograma do usuário e agrega horas/questões por semana e disciplina.
+   * @param {string|null} userId
+   * @param {string|null} periodStart Data ISO de início do período, ou null para todo o histórico.
+   * @returns {Promise<{totalHours: number, totalQuestions: number, totalHits: number, hoursByWeek: Object, hoursBySubject: Object, questionsBySubject: Object}>}
+   */
   async function fetchCronogramaData(userId, periodStart) {
     const client = window.supabaseClient;
     if (!client || !userId) return { totalHours: 0, totalQuestions: 0, totalHits: 0, hoursByWeek: {}, hoursBySubject: {}, questionsBySubject: {} };
@@ -287,6 +303,12 @@
     }
   }
 
+  /**
+   * Busca contagem de flashcards criados e estudados pelo usuário.
+   * @param {string|null} userId
+   * @param {string|null} periodStart Data ISO de início do período, ou null para todo o histórico.
+   * @returns {Promise<{studied: number, total: number}>}
+   */
   async function fetchFlashcardsData(userId, periodStart) {
     const client = window.supabaseClient;
     if (!client || !userId) return { studied: 0, total: 0 };
@@ -311,9 +333,11 @@
   }
 
   /* ─── Simulado scoring ──────────────────────────────── */
-  // Maps normalised topic → which ENEM day it belongs to.
-  // Dia 2 = Matemática + Ciências da Natureza (90 questions)
-  // Dia 1 = Linguagens + Ciências Humanas      (90 questions)
+  /**
+   * Mapa de tópico normalizado → dia do ENEM correspondente.
+   * Dia 2 = Matemática + Ciências da Natureza (90 questões).
+   * Dia 1 = Linguagens + Ciências Humanas (90 questões).
+   */
   const SIMULADO_TOPIC_DAY = {
     "dia 2 - completo": "dia2_completo",
     "dia 1 - completo": "dia1_completo",
@@ -329,6 +353,13 @@
       .toLowerCase().trim();
   }
 
+  /**
+   * Busca o melhor resultado histórico de simulados do usuário, combinando
+   * a fonte legada (cronograma_entries) com a página dedicada /simulados.
+   * @param {string|null} userId
+   * @param {string|null} periodStart Data ISO de início do período, ou null para todo o histórico.
+   * @returns {Promise<{total: number|null, dia1: number, dia2: number}>} `total` é null se nenhum simulado foi registrado.
+   */
   async function fetchSimuladoData(userId, periodStart) {
     const client = window.supabaseClient;
     if (!client || !userId) return { total: null, dia1: 0, dia2: 0 };
@@ -336,9 +367,9 @@
     try {
       const [legacyRes, novosRes] = await Promise.all([
         (async () => {
-          // Legado: simulados registrados pela antiga aba "Simulado" do Calendário
+          // Fonte legada: simulados registrados pela antiga aba "Simulado" do Calendário
           // (cronograma_entries, com o dia/área embutido no texto de "topic").
-          // Mantido só para leitura — não é mais possível criar entradas assim.
+          // Mantida somente para leitura — não é mais possível criar entradas assim.
           let q = client
             .from("cronograma_entries")
             .select("topic, hits, questions, week_start")
@@ -791,17 +822,17 @@
         fetchSimuladoData(userId, periodStart),
       ]);
 
-      const mediaSimulados = simData.total;  // null → nenhum simulado registrado
+      const mediaSimulados = simData.total; // null → nenhum simulado registrado
 
       // Mescla questões do Calendário (cronograma_entries) com as do banco de questões
       // (lista_respostas) para exibir o total unificado no Geral.
       const totalQuestoes = questData.total + cronData.totalQuestions;
       const totalAcertos  = questData.acertos + cronData.totalHits;
 
-      // Mescla o breakdown por disciplina das duas fontes.
-      // Acertos (para taxa de acerto) vêm APENAS de lista_respostas — onde o campo
-      // `correta` é registrado com precisão. Exceto simulado, que só existe no cronograma.
-      // O total de questões soma as duas fontes.
+      // Mescla o breakdown por disciplina das duas fontes. Acertos (para taxa de
+      // acerto) vêm apenas de lista_respostas, onde o campo `correta` é registrado
+      // com precisão — exceto "simulado", que só existe no cronograma. O total de
+      // questões soma as duas fontes.
       const mergedBySubject = {};
       Object.entries(questData.bySubject).forEach(([k, v]) => {
         mergedBySubject[k] = { subj: v.subj, total: v.total, acertos: v.acertos };

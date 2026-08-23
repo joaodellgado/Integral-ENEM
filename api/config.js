@@ -1,7 +1,11 @@
-// Serve window.__MM_CONFIG__ dinamicamente a partir de variáveis de ambiente,
-// para que a URL/chave do Supabase não fiquem hardcoded no código-fonte versionado.
-// A anon key do Supabase é pública por design (protegida por Row Level Security),
-// mas mesmo assim mantida fora do repositório por boa prática e organização.
+/**
+ * Serve `window.__MM_CONFIG__` dinamicamente a partir de variáveis de ambiente,
+ * para que a URL/chave do Supabase não fiquem hardcoded no código-fonte versionado.
+ * A anon key do Supabase é pública por design (protegida por Row Level Security),
+ * mas mesmo assim mantida fora do repositório por boa prática e organização.
+ * @param {import('http').IncomingMessage} req
+ * @param {import('http').ServerResponse} res
+ */
 module.exports = function handler(req, res) {
   const supabaseUrl = process.env.SUPABASE_URL || "";
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";

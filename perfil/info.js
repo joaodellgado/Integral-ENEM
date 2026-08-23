@@ -22,6 +22,12 @@
   const BUCKET = "admin-avatars";
   const DEFAULT_AVATAR = "/imagens/default-avatar.png";
   const defaultTransform = { scale: 1, offsetX: 0, offsetY: 0 };
+  /**
+   * Normaliza um caminho/URL de avatar para o caminho relativo dentro do
+   * bucket `admin-avatars`, removendo prefixos de URL do Storage do Supabase.
+   * @param {string|null} path
+   * @returns {string|null}
+   */
   const normalizeAvatarPath = (path) => {
     if (!path) return null;
     let cleaned = String(path).trim().replace(/\\/g, "/");

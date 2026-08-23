@@ -77,6 +77,14 @@ async function getMirrorByKey(db: IDBDatabase, key: string): Promise<LocalStorag
   return records.find((r) => r.key === key);
 }
 
+/**
+ * Harness de desenvolvimento que exercita, ponta a ponta, os cenários críticos
+ * da migração de localStorage para o mirror IndexedDB: retomada após falha,
+ * armazenamento insuficiente, lock concorrente entre abas, chaves grandes,
+ * isolamento do outbox e payloads que excedem o limite de tamanho.
+ * Lança (throw) no primeiro `assert` que falhar. Não é executado em produção.
+ * @returns {Promise<void>}
+ */
 export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   console.info("[HARNESS] start");
   const HARNESS_DB_NAME = "matrizMentoriaDB_harness";
@@ -140,7 +148,7 @@ export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   const fallback = await facade.get("mm_profile_cache");
   assert(fallback === "fallback_ok", "fallback to localStorage when IDB unavailable");
 
-  // 3) storageFacade.set atualiza value+checksum+updatedAt e nao toca outbox
+  // Cenário: storageFacade.set() deve atualizar value/checksum/updatedAt sem enfileirar eventos no outbox
   await clearIDBStores(db);
   const facadeDirect = createStorageFacade({ db });
   const keySet = "mm_profile_cache";
@@ -158,7 +166,7 @@ export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   const outboxAfterFacadeSet = await getAllFromStore<OutboxRecord>(db, STORES.outbox);
   assert(outboxAfterFacadeSet.length === 0, "storageFacade.set must not enqueue outbox events");
 
-  // A) pouco espaco: migra apenas pequenas + erro INSUFFICIENT_STORAGE sem marcar migrated=true
+  // Cenário: sob pouco espaço, migra apenas as chaves pequenas, registra INSUFFICIENT_STORAGE e não marca migrated=true
   await clearIDBStores(db);
   seedFakeLocalStorage();
   const lowSpace = await migrateLocalStorageMirror(db, {
@@ -171,7 +179,7 @@ export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   const startupStorageStatus = await createStorageFacade({ db }).getMigrationStatus();
   assert(startupStorageStatus.migrated === false, "storage facade should keep migrated=false after insufficient storage");
 
-  // B) lock de migracao (simula outra aba segurando lock)
+  // Cenário: a migração não deve rodar enquanto outra aba segura o lock de migração
   await clearIDBStores(db);
   seedFakeLocalStorage();
   const foreignLock: MigrationLock = {
@@ -187,7 +195,7 @@ export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   const lockMeta = await getMigrationMeta(db);
   assert(lockMeta.migrated === false, "lock-blocked run should not mark migrated");
 
-  // C) key gigante: checksumPending + idle path (observado pelos logs/progresso)
+  // Cenário: chave gigante deve passar pelo caminho de checksum assíncrono (fase checksum_idle) antes de migrated=true
   await clearIDBStores(db);
   seedFakeLocalStorage();
   const hugeKey = seedHugeLocalStorageKey();
@@ -204,7 +212,7 @@ export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   assert(hugeRec?.checksumPending !== true, "huge key checksum should be finalized before migrated=true");
   assert(progressEvents.some((p) => p.phase === "checksum_idle"), "checksum_idle phase should run for huge key");
 
-  // F) verifyOutboxSafety + prova de que migracao nao gera eventos no outbox
+  // Cenário: verifyOutboxSafety() valida dedup/coalesce/rate-limit e confirma que a migração não gera eventos no outbox
   await clearIDBStores(db);
   seedFakeLocalStorage();
   const outboxBeforeMigration = await getAllFromStore<OutboxRecord>(db, STORES.outbox);
@@ -220,7 +228,7 @@ export async function runLocalStorageMirrorMigrationHarness(): Promise<void> {
   assert(outboxSafety.rateLimitObserved, `verifyOutboxSafety rate-limit failed: ${outboxSafety.notes.join(" | ")}`);
   assert(outboxSafety.migrationIsolationObserved, `verifyOutboxSafety migration-isolation failed: ${outboxSafety.notes.join(" | ")}`);
 
-  // 5/6) oversized nao fica preso eternamente: vira metadata e e enviado depois do cooldown
+  // Cenário: payload que excede o limite de tamanho vira um marcador de metadata e é reenviado após o cooldown de backoff
   await clearIDBStores(db);
   const hugePayload = { blob: bigString(80, "p") }; // > 32KB default payload cap
   await enqueueOutboxEvent(db, { userId: "u-big", type: "upsert", key: "mm_big_payload", payload: hugePayload });

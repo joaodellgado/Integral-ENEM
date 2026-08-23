@@ -1,5 +1,7 @@
-// Guarda de autenticação para páginas protegidas (roles: ADMIN, ALUNO)
-// Requer que window.supabaseClient já esteja definido (createClient com URL/KEY)
+/**
+ * Guarda de autenticação para páginas protegidas (roles: ADMIN, ALUNO).
+ * Requer que `window.supabaseClient` já esteja definido (createClient com URL/KEY).
+ */
 (function () {
   const AUTH_READY_KEY = "mm_auth_ok";
   const GUARD_CACHE_KEY = "mm_guard_v1";
@@ -37,7 +39,6 @@
     } catch (_) {}
   }
 
-  // Trata erros de auth/Supabase e força logout + redirect
   function buildLoginRedirectUrl() {
     const path = String(window.location.pathname || "/");
     const search = String(window.location.search || "");
@@ -47,6 +48,13 @@
     return `/?next=${encodeURIComponent(next)}`;
   }
 
+  /**
+   * Detecta erros de autenticação/JWT do Supabase e força logout + redirect
+   * para o login, preservando a URL atual como destino pós-login.
+   * @param {Object} error Erro retornado por uma chamada do Supabase.
+   * @param {Object} [supabaseClient] Cliente Supabase; usa `window.supabaseClient` por padrão.
+   * @returns {Promise<void>}
+   */
   async function handleSupabaseAuthError(error, supabaseClient = window.supabaseClient) {
     if (!error || !supabaseClient) return;
     const message = (error.message || "").toLowerCase();
@@ -67,6 +75,12 @@
     }
   }
 
+  /**
+   * Normaliza um caminho/URL de avatar para o caminho relativo dentro do
+   * bucket `admin-avatars`, removendo prefixos de URL do Storage do Supabase.
+   * @param {string|null} path
+   * @returns {string|null}
+   */
   function normalizeAvatarPath(path) {
     if (!path) return null;
     let cleaned = String(path).trim().replace(/\\/g, "/");
@@ -76,6 +90,14 @@
     return cleaned || null;
   }
 
+  /**
+   * Valida a sessão do usuário e exige role ADMIN ou ALUNO, redirecionando
+   * para o login quando não autenticado ou não autorizado. Usa um cache de
+   * sessão (30 min) para evitar consultas repetidas ao perfil.
+   * @param {Object} [options]
+   * @param {string} [options.redirectTo] URL de redirecionamento em caso de falha.
+   * @returns {Promise<{user: Object, profile: Object|null}|null>} `null` se o acesso for negado.
+   */
   async function enforceAdminGuard(options = {}) {
     const redirectTo = options.redirectTo || buildLoginRedirectUrl();
     const supabaseClient = window.supabaseClient;

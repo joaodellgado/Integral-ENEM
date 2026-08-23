@@ -20,6 +20,11 @@ function send(res, status, payload) {
   res.end(JSON.stringify(payload));
 }
 
+/**
+ * Valida o Bearer token da requisição contra `/auth/v1/user` do Supabase.
+ * @param {import('http').IncomingMessage} req
+ * @returns {Promise<Object|null>} O usuário autenticado, ou null se o token for ausente/inválido.
+ */
 async function getAuthenticatedUser(req) {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
 
@@ -113,6 +118,11 @@ function sanitizeCoverageChecklist(raw) {
   };
 }
 
+/**
+ * Extrai contagem de tokens da resposta do Gemini e estima o custo em USD
+ * a partir das variáveis de ambiente de preço por milhão de tokens, quando definidas.
+ * @returns {Object} Metadados de uso, com `estimatedCostUsd` null se o preço não estiver configurado.
+ */
 function buildUsageMeta(raw, model, apiVersion) {
   const usage =
     raw?.usageMetadata && typeof raw.usageMetadata === "object"
@@ -222,6 +232,11 @@ function extractGeminiText(raw) {
   );
 }
 
+/**
+ * Chama a API Gemini para o modelo informado e traduz erros de modelo
+ * indisponível (404 ou mensagem equivalente) em uma mensagem acionável.
+ * @returns {Promise<{raw: Object, model: string, apiVersion: string}|{error: string, status: number}>}
+ */
 async function generateWithModel({ apiKey, model, systemPrompt, userPrompt, inputParts }) {
   const { response, raw } = await requestGeminiGenerate({
     apiKey,

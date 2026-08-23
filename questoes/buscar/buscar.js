@@ -12,7 +12,6 @@
     window.supabaseClient = supabaseClient;
     const adminGuardPromise = enforceAdminGuard();
 
-    // =========================
     if (!supabaseClient) {
       console.warn("[Buscar] Supabase não inicializado. Verifique URL e ANON KEY.");
     }
@@ -20,6 +19,11 @@
     // =========================
     // Carregar nome do administrador logado
     // =========================
+    /**
+     * Carrega o nome de exibição do administrador logado no menu, priorizando
+     * o perfil do Supabase e caindo para metadados de auth ou e-mail.
+     * @returns {Promise<void>}
+     */
     async function loadAdminName() {
       if (!supabaseClient) return;
 
@@ -520,9 +524,8 @@
       const anoLabel = question.ano ? String(question.ano) : "-";
       modalMeta.textContent = `${anoLabel} · ${modLabel} · ${areaLabel}`;
 
-      // Texto / Enunciado separados
-      // Aqui, "enunciado" (coluna principal) é o TEXTO/contexto
-      // e "sub_enunciado" é a pergunta curta (ENUNCIADO)
+      // Nomenclatura invertida no schema: a coluna "enunciado" guarda o texto/
+      // contexto da questão, e "sub_enunciado" guarda a pergunta curta exibida.
       const texto = (question.enunciado || "").toString().trim();
       const enunciado = (question.sub_enunciado || "").toString().trim();
       const fonte = (question.fonte || "").toString().trim();
@@ -659,13 +662,13 @@
         const itemLetter = item.dataset.letter;
         item.classList.remove("is-correct", "is-selected-wrong", "is-selected");
 
-        // remove qualquer badge/botão de confirmação anterior
+        // Remove o botão de confirmação de uma seleção anterior, se houver
         const existingConfirm = item.querySelector(".option-confirm-btn");
         if (existingConfirm) {
           existingConfirm.remove();
         }
 
-        // adiciona o botãozinho rosa claro neon na alternativa que o aluno selecionou
+        // Adiciona o botão de confirmação na alternativa selecionada pelo aluno
         if (itemLetter === letter) {
           const confirmBtn = document.createElement("button");
           confirmBtn.type = "button";

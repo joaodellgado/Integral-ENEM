@@ -674,6 +674,11 @@
     pager.appendChild(next);
   }
 
+  /**
+   * Carrega as listas do usuário (próprias ou já respondidas), enriquecidas
+   * com estatísticas de progresso, e dispara a renderização.
+   * @returns {Promise<void>}
+   */
   async function carregarListas() {
     if (currentView === "recommended") {
       // Placeholder: nenhuma recomendada ainda
@@ -1888,6 +1893,13 @@
     responderState.open = false;
   }
 
+  /**
+   * Gera o PDF de uma lista, buscando as questões em `lista_itens` e recorrendo
+   * a fontes alternativas (cache local, depois `lista_respostas`) quando a
+   * fonte primária está vazia — cenário comum em listas antigas ou corrompidas.
+   * @param {Object} lista Registro da lista, precisa conter `id`.
+   * @returns {Promise<void>}
+   */
   async function gerarPdf(lista) {
     if (!lista?.id) {
       alert("Erro: lista sem identificador. Recarregue a página e tente novamente.");

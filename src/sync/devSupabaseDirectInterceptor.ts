@@ -32,6 +32,14 @@ function warnDirectSupabaseCall(kind: "fetch" | "xhr", url: string): void {
   }
 }
 
+/**
+ * Instala, apenas em ambiente de desenvolvimento local, um patch em
+ * `window.fetch`/`XMLHttpRequest` que alerta quando uma chamada de escrita
+ * atinge o Supabase diretamente em vez de passar pelo outbox de sincronização.
+ * Opcionalmente lança uma exceção quando `__MM_THROW_ON_DIRECT_SUPABASE_WRITE__`
+ * está habilitado, para detecção mais estrita em testes.
+ * @returns {void}
+ */
 export function installDirectSupabaseCallInterceptor(): void {
   if (!shouldInstallDevInterceptor()) return;
   const globalRef = window as unknown as { __syncDirectSupabaseInterceptorInstalled?: boolean };

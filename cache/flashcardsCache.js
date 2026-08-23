@@ -1,3 +1,10 @@
+/**
+ * Cache local (localStorage) de decks/tópicos/subtópicos/cards de flashcards,
+ * com fila de sincronização para o Supabase via syncGateway. Toda operação de
+ * escrita (create/rename/delete/move) retorna `{ ok: boolean, reason?: string }`
+ * e, em caso de sucesso, enfileira o upsert/delete correspondente antes de
+ * persistir no localStorage.
+ */
 (function () {
   const CACHE_KEY = "mm_flashcards_cache_v2";
   const STUDY_CACHE_KEY = "mm_flashcards_study_v1";
@@ -2400,8 +2407,9 @@
           !hasAnonymousDataForRecovery;
 
         if (canSkipRemoteSnapshot) {
-          // Fingerprint match means local cache still mirrors the last known remote snapshot,
-          // so delete diff can safely run for upcoming mutations in this session.
+          // Fingerprint bate: o cache local ainda espelha o último snapshot remoto
+          // conhecido, então o diff de exclusão pode rodar com segurança para as
+          // próximas mutações desta sessão.
           markLocalUserHydrationFresh(uid);
           return { ok: true, mode: "remote_unchanged_use_cache", fingerprintMatched: true };
         }

@@ -92,6 +92,12 @@ function attachNavbarEvents(navEl) {
     document.body.appendChild(cacheClearModal);
   }
 
+  /**
+   * Normaliza um caminho/URL de avatar para o caminho relativo dentro do
+   * bucket `admin-avatars`, removendo prefixos de URL do Storage do Supabase.
+   * @param {string|null} path
+   * @returns {string|null}
+   */
   function normalizeAvatarPath(path) {
     if (!path) return null;
     let cleaned = String(path).trim().replace(/\\/g, "/");
@@ -132,6 +138,12 @@ function attachNavbarEvents(navEl) {
     img.dataset.fallbackReady = "true";
   }
 
+  /**
+   * Resolve a URL do avatar seguindo a ordem de precedência: URL absoluta
+   * salva no perfil, URL assinada, URL pública e, por fim, o caminho bruto.
+   * Retorna o avatar padrão se nenhuma fonte estiver disponível.
+   * @returns {string}
+   */
   function resolveAvatarUrlFromProfile(avatarUrl, avatarPath, signedUrl, publicUrl) {
     if (avatarUrl && (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))) {
       return avatarUrl;

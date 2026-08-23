@@ -92,10 +92,6 @@
       }
     }
 
-    (function () {
-    })();
-
-    // =========================
     if (!supabaseClient) {
       console.warn(
         "[Listas] Supabase não inicializado. Verifique o script CDN e as chaves públicas."
@@ -124,8 +120,13 @@
     });
 
     // =========================
-    // CARREGAR NOME DO ADMIN NO MENU DO AVATAR
+    // Carregar nome do usuário no menu do avatar
     // =========================
+    /**
+     * Carrega o nome de exibição do usuário logado no menu do avatar,
+     * usando o perfil do Supabase e caindo para o e-mail se ausente.
+     * @returns {Promise<void>}
+     */
     async function loadUserDisplayName() {
       if (!supabaseClient) return;
 
@@ -160,7 +161,7 @@
     loadUserDisplayName();
 
     // =========================
-    // CONTROLES DA UI (como já existia)
+    // Controles da UI
     // =========================
     const disciplineList = document.getElementById('discipline-list');
     const addDisciplineBtn = document.querySelector('.btn-add-discipline');
@@ -984,9 +985,10 @@
       }
     });
 
-    // =========================
-    // HELPER PRA COLETAR FILTROS DA UI
-    // =========================
+    /**
+     * Coleta a configuração de filtros de cada card de disciplina na UI.
+     * @returns {Array<Object>} Um item de configuração por card.
+     */
     function collectListConfig() {
       const cards = disciplineList.querySelectorAll('.discipline-card');
       const config = [];
@@ -1076,7 +1078,7 @@
     }
 
     // =========================
-    // "Salvar Lista" usando localStorage + redirecionar para /questoes/diagramacao (com validações e Supabase)
+    // Salvar lista: valida os filtros, consulta o Supabase e redireciona para /questoes/diagramacao
     // =========================
     const saveListBtn = document.getElementById("save-list-btn");
     resetGenerationProgress();
