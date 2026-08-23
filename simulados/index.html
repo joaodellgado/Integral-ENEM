@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integral ENEM | Simulados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="/theme.js"></script>
+    <link rel="icon" href="/imagens/integral-logo.png" type="image/png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png" />
+    <link rel="manifest" href="/imagens/site.webmanifest" />
+    <link rel="stylesheet" href="/navbar/navbar.css" />
+    <link rel="stylesheet" href="/simulados/simulados.css" />
+  </head>
+  <body class="simulados-page">
+    <div id="navbar-root"></div>
+    <script type="module" src="/navbar/navbar.js"></script>
+
+    <section class="simulados-hero outside">
+      <div class="simulados-hero__left">
+        <div class="simulados-hero__icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="simulados-hero__title">Simulados</h1>
+          <p class="simulados-hero__sub">Registre seus simulados e mapeie os motivos dos seus erros</p>
+        </div>
+      </div>
+      <div class="simulados-cta-row">
+        <button type="button" class="simulados-cta simulados-cta--secondary" id="openRaioXBtn" hidden>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Raio-X
+        </button>
+        <button type="button" class="simulados-cta" id="openSimuladoFormBtn">+ Novo simulado</button>
+      </div>
+    </section>
+
+    <main class="simulados-app" id="simuladosApp">
+      <div class="simulados-loading" id="simuladosLoading" aria-live="polite" aria-label="Carregando simulados">
+        <div class="simulados-loading__bar"></div>
+      </div>
+
+      <!-- Lista de simulados -->
+      <section class="simulados-list-view" id="simuladosListView" hidden>
+        <div class="simulados-grid" id="simuladosGrid"></div>
+        <div class="simulados-empty" id="simuladosEmpty" hidden>
+          <p>Nenhum simulado registrado ainda.</p>
+          <p class="simulados-empty__hint">Clique em "+ Novo simulado" para começar a mapear seus erros.</p>
+        </div>
+      </section>
+
+      <!-- Detalhe de um simulado (lista de erros) -->
+      <section class="simulado-detail" id="simuladoDetailView" hidden>
+        <button type="button" class="simulado-detail__back" id="simuladoDetailBack">← Voltar</button>
+
+        <div class="simulado-detail__card" id="simuladoDetailCard">
+          <div class="simulado-detail__card-body" id="simuladoDetailCardContent"></div>
+          <button type="button" class="revisao-trigger" id="revisaoToggle" hidden aria-expanded="false" aria-controls="revisaoPanelSection">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span class="revisao-trigger__label">Revisão</span>
+            <span class="revisao-trigger__counter" id="revisaoCounter"></span>
+          </button>
+        </div>
+
+        <section class="revisao-panel" id="revisaoPanelSection" hidden>
+          <ul class="revisao-panel__list" id="revisaoList" role="list"></ul>
+        </section>
+
+        <div class="simulado-detail__erros-header">
+          <h2>Erros mapeados</h2>
+          <button type="button" class="simulados-cta simulados-cta--ghost" id="openErroFormBtn">+ Adicionar erro</button>
+        </div>
+
+        <div class="erros-grid" id="errosGrid"></div>
+        <div class="simulados-empty" id="errosEmpty" hidden>
+          <p>Nenhum erro registrado para este simulado ainda.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: novo simulado -->
+    <dialog id="simuladoFormModal" class="simulados-modal simulados-modal--lg">
+      <form method="dialog" class="simulados-form" id="simuladoForm">
+        <header>
+          <div class="simulados-form__header-text">
+            <h2 id="simuladoFormTitle">Novo simulado</h2>
+            <p id="simuladoFormSub">Registre os dados gerais do simulado que você fez.</p>
+          </div>
+          <button type="button" id="closeSimuladoFormBtnX" class="modal-close-x" aria-label="Fechar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </header>
+
+        <label class="field">
+          <span>Nome do simulado</span>
+          <input type="text" id="simuladoNome" maxlength="120" required placeholder="Ex: Simulado Bernoulli #4" />
+        </label>
+
+        <p class="simulados-form-hint">Informe a data do dia 1, do dia 2, ou de ambos — pelo menos uma é obrigatória (útil se você fez só um simulado parcial).</p>
+
+        <div class="form-section form-section--dia1">
+          <div class="form-section__header">
+            <span class="form-section__badge">Dia 1</span>
+            <h3>Linguagens, Humanas e Redação</h3>
+          </div>
+
+          <div class="field">
+            <span>Data do dia 1 <span class="field-optional">(opcional)</span></span>
+            <button type="button" class="date-field-trigger" id="simuladoDataDia1Trigger" data-date-target="dia1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span id="simuladoDataDia1Label" class="is-placeholder">Selecionar data</span>
+            </button>
+            <input type="hidden" id="simuladoDataDia1" />
+          </div>
+
+          <div class="field-row">
+            <label class="field">
+              <span>Acertos — Linguagens <span class="field-optional">(opcional)</span></span>
+              <input type="number" id="simuladoAcertosLing" min="0" step="1" placeholder="Ex: 33" />
+            </label>
+            <label class="field">
+              <span>Acertos — Humanas <span class="field-optional">(opcional)</span></span>
+              <input type="number" id="simuladoAcertosHum" min="0" step="1" placeholder="Ex: 32" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Nota da redação <span class="field-optional">(opcional)</span></span>
+            <input type="number" id="simuladoNotaRedacao" min="0" max="1000" step="1" placeholder="Ex: 880" />
+          </label>
+        </div>
+
+        <div class="form-section form-section--dia2">
+          <div class="form-section__header">
+            <span class="form-section__badge">Dia 2</span>
+            <h3>Matemática e Natureza</h3>
+          </div>
+
+          <div class="field">
+            <span>Data do dia 2 <span class="field-optional">(opcional)</span></span>
+            <button type="button" class="date-field-trigger" id="simuladoDataDia2Trigger" data-date-target="dia2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span id="simuladoDataDia2Label" class="is-placeholder">Selecionar data</span>
+            </button>
+            <input type="hidden" id="simuladoDataDia2" />
+          </div>
+
+          <div class="field-row">
+            <label class="field">
+              <span>Acertos — Matemática <span class="field-optional">(opcional)</span></span>
+              <input type="number" id="simuladoAcertosMat" min="0" step="1" placeholder="Ex: 35" />
+            </label>
+            <label class="field">
+              <span>Acertos — Natureza <span class="field-optional">(opcional)</span></span>
+              <input type="number" id="simuladoAcertosNat" min="0" step="1" placeholder="Ex: 30" />
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <span>Dificuldade <span class="field-optional">(opcional)</span></span>
+          <div class="difficulty-toggle" id="simuladoDificuldade" role="radiogroup" aria-label="Dificuldade do simulado">
+            <button type="button" class="difficulty-btn difficulty-btn--facil" data-value="facil">Fácil</button>
+            <button type="button" class="difficulty-btn difficulty-btn--medio" data-value="medio">Médio</button>
+            <button type="button" class="difficulty-btn difficulty-btn--dificil" data-value="dificil">Difícil</button>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Questões totais <span class="field-optional">(opcional)</span></span>
+          <input type="number" id="simuladoQuestoesTotal" min="0" step="1" placeholder="Ex: 180" />
+        </label>
+
+        <label class="field">
+          <span>Observações <span class="field-optional">(opcional)</span></span>
+          <textarea id="simuladoObservacoes" rows="3" maxlength="2000" placeholder="Qualquer contexto geral sobre esse simulado..."></textarea>
+        </label>
+
+        <footer class="simulados-form-actions">
+          <button type="button" id="closeSimuladoFormBtn" class="ghost-cta">Cancelar</button>
+          <button type="submit" class="simulados-cta">Salvar simulado</button>
+        </footer>
+
+        <div class="date-popover" id="datePopover" hidden>
+          <div class="date-popover__header">
+            <button type="button" class="date-popover__nav" id="datePopoverPrev" aria-label="Mês anterior">‹</button>
+            <span class="date-popover__title" id="datePopoverTitle"></span>
+            <button type="button" class="date-popover__nav" id="datePopoverNext" aria-label="Próximo mês">›</button>
+          </div>
+          <div class="date-popover__weekdays">
+            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+          </div>
+          <div class="date-popover__grid" id="datePopoverGrid"></div>
+          <div class="date-popover__footer">
+            <button type="button" class="date-popover__today" id="datePopoverToday">Hoje</button>
+            <button type="button" class="date-popover__clear" id="datePopoverClear">Limpar data</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Modal: novo erro -->
+    <dialog id="erroFormModal" class="simulados-modal">
+      <form method="dialog" class="simulados-form" id="erroForm">
+        <header>
+          <div class="simulados-form__header-text">
+            <h2 id="erroFormTitle">Adicionar erro</h2>
+            <p id="erroFormSub">Mapeie o que você errou para revisar com foco.</p>
+          </div>
+          <button type="button" id="closeErroFormBtnX" class="modal-close-x" aria-label="Fechar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </header>
+
+        <div class="field-row">
+          <label class="field" onclick="void(0)">
+            <span>Matéria</span>
+            <div class="custom-select" id="erroMateriaWrap">
+              <button type="button" class="custom-select__trigger" id="erroMateriaTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="erroMateriaLabel" class="is-placeholder">Selecione</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="custom-select__panel" id="erroMateriaPanel" hidden>
+                <ul class="custom-select__list" id="erroMateriaList" role="listbox"></ul>
+              </div>
+            </div>
+            <input type="hidden" id="erroMateria">
+          </label>
+          <label class="field" onclick="void(0)">
+            <span>Conteúdo</span>
+            <div class="custom-select" id="erroConteudoWrap">
+              <button type="button" class="custom-select__trigger" id="erroConteudoTrigger" disabled aria-haspopup="listbox" aria-expanded="false">
+                <span id="erroConteudoLabel" class="is-placeholder">Selecione a matéria primeiro</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="custom-select__panel" id="erroConteudoPanel" hidden>
+                <ul class="custom-select__list" id="erroConteudoList" role="listbox"></ul>
+              </div>
+            </div>
+            <input type="hidden" id="erroConteudo">
+          </label>
+        </div>
+
+        <label class="field" onclick="void(0)">
+          <span>Tópico <span class="field-optional">(opcional)</span></span>
+          <div class="custom-select" id="erroSubtopicoWrap">
+            <button type="button" class="custom-select__trigger" id="erroSubtopicoTrigger" disabled aria-haspopup="listbox" aria-expanded="false">
+              <span id="erroSubtopicoLabel" class="is-placeholder">Selecione o conteúdo primeiro</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="custom-select__panel" id="erroSubtopicoPanel" hidden>
+              <ul class="custom-select__list" id="erroSubtopicoList" role="listbox"></ul>
+            </div>
+          </div>
+          <input type="hidden" id="erroSubtopico">
+        </label>
+
+        <label class="field">
+          <span>Nº da questão <span class="field-optional">(opcional)</span></span>
+          <input type="number" id="erroNumeroQuestao" min="1" max="999" step="1" placeholder="Ex: 42" />
+        </label>
+
+        <label class="field" onclick="void(0)">
+          <span>Motivo do erro</span>
+          <div class="custom-select" id="erroMotivoWrap">
+            <button type="button" class="custom-select__trigger" id="erroMotivoTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="erroMotivoLabel" class="is-placeholder">Selecione</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="custom-select__panel" id="erroMotivoPanel" hidden>
+              <ul class="custom-select__list" id="erroMotivoList" role="listbox"></ul>
+            </div>
+          </div>
+          <input type="hidden" id="erroMotivo">
+        </label>
+
+        <label class="field">
+          <span>Observação <span class="field-optional">(opcional)</span></span>
+          <textarea id="erroObservacao" rows="3" maxlength="1000" placeholder="Detalhe o que aconteceu, se quiser..."></textarea>
+        </label>
+
+        <footer class="simulados-form-actions">
+          <button type="button" id="closeErroFormBtn" class="ghost-cta">Cancelar</button>
+          <button type="submit" class="simulados-cta">Salvar erro</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="raioXModal" class="simulados-modal">
+      <div class="simulados-form raio-x-form" role="document">
+        <header>
+          <div class="simulados-form__header-text">
+            <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:-3px;margin-right:6px;color:var(--sm-accent)"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Raio-X dos seus erros</h2>
+            <p>Conteúdos que você errou em mais de um simulado</p>
+          </div>
+          <button type="button" class="modal-close-x" id="raioXModalClose" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </header>
+        <div class="raio-x-list" id="raioXList"></div>
+      </div>
+    </dialog>
+
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/authGuard.js"></script>
+    <script>
+      const { createClient } = window.supabase || {};
+      const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+      const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+      window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+      window.adminGuardPromise = enforceAdminGuard();
+    </script>
+    <script src="/cache/profileCache.js"></script>
+    <script src="/materias/opcoes.js"></script>
+    <script src="/simulados/simulados.js"></script>
+  </body>
+</html>

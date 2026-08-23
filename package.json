@@ -1,0 +1,29 @@
+{
+  "name": "nucleo-matriz",
+  "version": "1.0.0",
+  "main": "authGuard.js",
+  "dependencies": {
+    "tslib": "^2.8.1",
+    "undici-types": "^7.16.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "serve": "npx vercel dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaodellgado/Nucleo-Matriz.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joaodellgado/Nucleo-Matriz/issues"
+  },
+  "homepage": "https://github.com/joaodellgado/Nucleo-Matriz#readme",
+  "description": ""
+}

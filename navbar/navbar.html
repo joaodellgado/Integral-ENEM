@@ -1,0 +1,89 @@
+<nav id="navbar">
+  <div class="nav-container">
+    <a href="/geral" class="logo">
+      <div class="logo-icon">
+        <img src="/imagens/integral-black-logo.png" alt="Logo Integral ENEM" class="logo-img logo-img--light" />
+        <img src="/imagens/integral-white-logo.png" alt="Logo Integral ENEM" class="logo-img logo-img--dark" />
+      </div>
+    </a>
+
+      <ul class="nav-links">
+        <li><a href="/geral">Geral</a></li>
+        <li><a href="/jornada">Jornada</a></li>
+        <li><a href="/calendario">Calendário</a></li>
+        <li><a href="/flashcards">Flashcards</a></li>
+        <li><a href="/simulados">Simulados</a></li>
+        <li class="nav-item-questions">
+          <button type="button" class="questions-trigger-btn" id="questionsMenuButton">
+            Questões <span class="caret">▾</span>
+          </button>
+          <div class="questions-menu" id="questionsMenu">
+          <button class="questions-menu-btn" type="button" data-target="/questoes/buscar">Buscar Questões</button>
+          <button class="questions-menu-btn" type="button" data-target="/questoes/gerar-lista">Gerar Listas</button>
+          <button class="questions-menu-btn" type="button" data-target="/questoes/listas">Minhas Listas</button>
+        </div>
+      </li>
+    </ul>
+
+    <div class="user-avatar">
+      <button class="user-avatar-btn" id="user-avatar-btn" type="button" aria-haspopup="true" aria-expanded="false">
+        <img src="/imagens/default-avatar.png" alt="Avatar do usuário" />
+      </button>
+
+      <div class="user-menu" id="user-menu" aria-label="Menu de usuário">
+        <div class="user-menu-header">
+          <div class="user-menu-label">Logado como:</div>
+          <div class="user-menu-name" id="user-menu-name">Carregando...</div>
+            <span class="role-badge role-admin" id="role-badge" style="display:none;"></span>
+        </div>
+        <hr class="user-menu-divider" />
+        <div class="user-menu-actions">
+          <button class="user-menu-link" type="button" id="theme-toggle-btn">Modo Claro</button>
+          <button class="user-menu-link profile-link" type="button" id="profile-btn">Perfil</button>
+          <button class="user-menu-link cache-clear-link" type="button" id="clear-cache-btn">Limpar cache local</button>
+          <button class="user-menu-link" type="button" id="logout-btn">Sair</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <ul class="nav-links-mobile" id="navLinksMobile">
+    <li><a href="/geral">Geral</a></li>
+    <li><a href="/jornada">Jornada</a></li>
+    <li><a href="/calendario">Calendário</a></li>
+    <li><a href="/flashcards">Flashcards</a></li>
+    <li><a href="/simulados">Simulados</a></li>
+    <li class="nav-links-mobile-title">Questões</li>
+    <li><a href="/questoes/buscar">Buscar Questões</a></li>
+    <li><a href="/questoes/gerar-lista">Gerar Listas</a></li>
+    <li><a href="/questoes/listas">Minhas Listas</a></li>
+  </ul>
+
+  <div class="cache-clear-modal" id="cache-clear-modal" hidden aria-hidden="true">
+    <div class="cache-clear-backdrop" data-cache-clear-close="backdrop"></div>
+    <div class="cache-clear-dialog" role="dialog" aria-modal="true" aria-labelledby="cache-clear-title" aria-describedby="cache-clear-desc">
+      <div class="cache-clear-dialog-header">
+        <h3 id="cache-clear-title">Limpar cache local?</h3>
+        <button type="button" class="cache-clear-close" id="cache-clear-close-btn" aria-label="Fechar">×</button>
+      </div>
+      <p class="cache-clear-desc" id="cache-clear-desc">
+        Isso limpa apenas dados locais (cache em <code>localStorage</code> e <code>IndexedDB</code>) deste dispositivo.
+        Seus dados remotos permanecem intactos.
+      </p>
+      <p class="cache-clear-note">
+        Antes de limpar, vamos tentar sincronizar pendências. Se houver dados ainda não sincronizados, a limpeza será bloqueada para evitar perda.
+      </p>
+      <div class="cache-clear-status" id="cache-clear-status" aria-live="polite"></div>
+      <div class="cache-clear-actions">
+        <button type="button" class="cache-clear-btn secondary" id="cache-clear-cancel-btn">Cancelar</button>
+        <button type="button" class="cache-clear-btn danger" id="cache-clear-confirm-btn">Confirmar limpeza</button>
+      </div>
+    </div>
+  </div>
+</nav>

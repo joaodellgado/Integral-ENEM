@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="/global.css" />
+  <meta charset="UTF-8" />
+  <title>Integral ENEM | Criar Lista - Banco Privado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/navbar/navbar.css" />
+  <link rel="icon" href="/imagens/integral-logo.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
+  <link rel="manifest" href="/imagens/site.webmanifest">
+  <link rel="stylesheet" href="/questoes/gerar-lista/gerar-lista.css">
+</head>
+<body>
+
+  <div id="navbar-root"></div>
+  <script type="module" src="/navbar/navbar.js"></script>
+
+  <div class="page-shell">
+    <div class="container">
+
+    <h1>Criar Lista de Questões</h1>
+
+    <div class="field-group" style="margin-bottom: 22px;">
+      <span class="field-label">Título da lista</span>
+      <input type="text" id="list-title" class="input-base" placeholder="Ex: Revisão ENEM 2026" maxlength="30">
+    </div>
+
+    <div class="filters-row" style="margin-bottom: 24px; grid-template-columns: repeat(3, minmax(200px, 1fr));">
+      <label style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-soft);">
+        <input type="checkbox" id="shuffle-global" class="input-checkbox" style="width:18px; height:18px;">
+        Embaralhar questões
+      </label>
+
+      <label style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-soft);">
+        <input type="checkbox" id="ignore-correct-global" class="input-checkbox" style="width:18px; height:18px;">
+        Ignorar respondidas corretamente
+      </label>
+
+      <label style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-soft);">
+        <input type="checkbox" id="list-mode" class="input-checkbox" style="width:18px; height:18px;">
+        Modo lista de questões
+        <span class="info-tooltip-wrap">
+          <button class="info-tooltip-trigger" type="button" aria-label="Informações sobre o modo lista de questões">
+            <img src="/imagens/info.png" alt="" class="info-tooltip-icon">
+          </button>
+          <div class="info-tooltip" role="tooltip">
+            <ul>
+              <li>Ativar este modo faz com que ao responder as questões pela plataforma, na aba "Minhas Listas", o gabarito da questão seja exibido logo após a alternativa ser marcada.</li>
+              <li>Caso não selecionado, o gabarito das questões será exibido apenas ao finalizar toda lista.</li>
+              <li>Este modo não influencia no PDF da sua lista de questões.</li>
+            </ul>
+          </div>
+        </span>
+      </label>
+    </div>
+
+    <div id="discipline-list">
+      <div class="discipline-card">
+        <div class="card-title">Item 1</div>
+        <button class="delete-card-btn" type="button">
+          <img src="/imagens/white-trash.png" alt="Excluir item" class="delete-card-icon delete-card-icon--light">
+          <img src="/imagens/white-trash.png" alt="" aria-hidden="true" class="delete-card-icon delete-card-icon--dark">
+        </button>
+        <div class="filters-row">
+
+          <div class="field-group">
+            <span class="field-label">Disciplina</span>
+            <select class="input-base">
+              <option value="">Selecione</option>
+              <option value="matematica">Matemática</option>
+              <option value="fisica">Física</option>
+              <option value="biologia">Biologia</option>
+              <option value="quimica">Química</option>
+              <option value="historia">História</option>
+              <option value="sociologia">Sociologia</option>
+              <option value="filosofia">Filosofia</option>
+              <option value="geografia">Geografia</option>
+              <option value="linguagens">Linguagens</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <span class="field-label">Questões</span>
+            <input type="number" class="input-base" value="10" min="1">
+          </div>
+
+          <div class="field-group">
+            <span class="field-label">Conteúdo</span>
+            <select class="input-base">
+              <option>Todas</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <span class="field-label">Tópico específico</span>
+            <select class="input-base">
+              <option>Todos</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="filters-row secondary">
+
+          <div class="field-group">
+            <span class="field-label">Procurar por</span>
+            <input type="text" class="input-base" placeholder="#id ou texto da questão">
+          </div>
+
+          <div class="field-group">
+            <span class="field-label">Instituição</span>
+            <select class="input-base">
+              <option value="">Todas</option>
+              <option value="regular">Regular</option>
+              <option value="ppl">PPL</option>
+              <option value="digital">Digital</option>
+              <option value="libras">Libras</option>
+              <option value="reaplicacao">Reaplicação</option>
+              <option value="outros">Outros</option>
+              <option value="autoral">Autoral</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <span class="field-label">Ano</span>
+            <select class="input-base">
+              <option value="">Todos</option>
+              <option>2026</option><option>2025</option><option>2024</option><option>2023</option>
+              <option>2022</option><option>2021</option><option>2020</option><option>2019</option>
+              <option>2018</option><option>2017</option><option>2016</option><option>2015</option>
+              <option>2014</option><option>2013</option><option>2012</option><option>2011</option>
+              <option>2010</option><option>2009</option><option>2008</option><option>2007</option>
+              <option>2006</option><option>2005</option><option>2004</option><option>2003</option>
+              <option>2002</option><option>2001</option><option>2000</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <span class="field-label">Dificuldade</span>
+            <select class="input-base">
+              <option value="">Fácil, Médio, Difícil</option>
+              <option value="facil">Fácil</option>
+              <option value="medio">Médio</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
+
+          <div class="field-group enem-only enem-competencia">
+            <span class="field-label">Competência</span>
+            <select class="input-base">
+              <option value="">Todas</option>
+            </select>
+          </div>
+
+          <div class="field-group enem-only enem-habilidade">
+            <span class="field-label">Habilidade</span>
+            <select class="input-base">
+              <option value="">Todas</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn-add-discipline">
+        <span>+</span> Adicionar mais disciplinas
+      </button>
+      <button class="btn-primary" id="save-list-btn">Salvar Lista</button>
+    </div>
+
+    <div class="generation-progress" id="generation-progress" aria-hidden="true">
+      <div class="generation-progress__header">
+        <div>
+          <span class="generation-progress__eyebrow">Criando sua lista</span>
+          <strong class="generation-progress__title" id="generation-progress-title">Preparando filtros e validando dados...</strong>
+        </div>
+        <span class="generation-progress__percent" id="generation-progress-percent">0%</span>
+      </div>
+      <div class="generation-progress__track" aria-hidden="true">
+        <span class="generation-progress__fill" id="generation-progress-fill"></span>
+      </div>
+      <p class="generation-progress__hint" id="generation-progress-hint">Isso pode levar alguns segundos dependendo da quantidade de itens da lista.</p>
+    </div>
+
+    </div>
+  </div>
+
+  <div class="save-success-modal" id="save-success-modal" aria-hidden="true">
+    <div class="save-success-card" role="dialog" aria-modal="true" aria-labelledby="save-success-title">
+      <h2 id="save-success-title">Lista criada!</h2>
+      <p>Para onde deseja ir agora?</p>
+      <div class="save-success-actions">
+        <button class="btn-secondary" type="button" id="go-to-listas-btn">Ir para Minhas Listas</button>
+        <button class="btn-primary" type="button" id="go-to-pdf-btn">Gerar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/materias/opcoes.js"></script>
+  <script src="/materias/topicos/matematica.js"></script>
+  <script src="/questoes/instituicoes.js"></script>
+  <script src="/authGuard.js"></script>
+  <script src="/questoes/gerar-lista/gerar-lista.js"></script>
+
+  <div class="brand-footer">
+    <span class="brand-butterfly">
+      <img src="/imagens/integral-black-logo.png" alt="Logo Integral ENEM" class="brand-logo--light">
+      <img src="/imagens/integral-white-logo.png" alt="Logo Integral ENEM" class="brand-logo--dark">
+    </span>
+  </div>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>

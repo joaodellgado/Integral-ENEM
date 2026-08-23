@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="/global.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Integral ENEM | Suas Listas</title>
+  <link rel="stylesheet" href="/navbar/navbar.css" />
+  <link rel="stylesheet" href="/questoes/listas/listas.css" />
+  <link rel="icon" href="/imagens/integral-logo.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
+  <link rel="manifest" href="/imagens/site.webmanifest">
+</head>
+<body class="listas-page">
+  <div id="navbar-root"></div>
+  <script type="module" src="/navbar/navbar.js"></script>
+
+  <main class="page-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Sua zona de bagunça:</p>
+        <h1>Listas de Questões</h1>
+        <p class="subtitle">Aqui você vai encontrar e gerenciar TODAS as listas de questões que você já criou.</p>
+      </div>
+      <div class="header-actions">
+        <a class="ghost-btn" href="/questoes/gerar-lista">Criar nova lista</a>
+      </div>
+    </header>
+
+    <div class="top-tabs" role="tablist">
+      <button class="tab-btn active" data-view="mine" role="tab" aria-selected="true">Minhas Listas</button>
+      <button class="tab-btn" data-view="recommended" role="tab" aria-selected="false">Listas Recomendadas</button>
+    </div>
+
+    <div class="page-layout">
+      <aside class="side-menu">
+        <div class="side-title">Filtros</div>
+        <button class="side-item active" data-filter="all">Todas</button>
+        <button class="side-item" data-filter="resolvendo">Resolvendo</button>
+        <button class="side-item" data-filter="finalizadas">Finalizadas</button>
+      </aside>
+
+      <section class="lists-section">
+        <div id="lists-loading" class="card muted-card">Carregando suas listas...</div>
+        <div id="lists-empty" class="card muted-card" style="display:none;">
+          Nenhuma lista encontrada.
+        </div>
+        <div id="lists-grid" class="lists-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="rename-modal" id="rename-modal" aria-hidden="true">
+    <div class="rename-card" role="dialog" aria-modal="true" aria-labelledby="rename-title">
+      <h3 id="rename-title">Renomear lista</h3>
+      <label class="rename-label" for="rename-input">Novo nome da lista</label>
+      <input type="text" id="rename-input" class="rename-input" maxlength="30" placeholder="Ex: Revisão ENEM 2026">
+      <div class="rename-actions">
+        <button type="button" class="rename-btn ghost" id="rename-cancel">Cancelar</button>
+        <button type="button" class="rename-btn primary" id="rename-confirm">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-modal" id="mode-modal" aria-hidden="true">
+    <div class="mode-card" role="dialog" aria-modal="true" aria-labelledby="mode-title">
+      <h3 id="mode-title">Alterar modo</h3>
+      <p id="mode-message" class="mode-message"></p>
+      <div class="mode-actions">
+        <button type="button" class="mode-btn ghost" id="mode-cancel">Cancelar</button>
+        <button type="button" class="mode-btn primary" id="mode-confirm">Ok</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/authGuard.js"></script>
+  <script>
+    const { createClient } = window.supabase || {};
+    const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+    const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+    window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    window.adminGuardPromise = enforceAdminGuard();
+  </script>
+  <script src="/cache/profileCache.js"></script>
+  <script src="/questoes/listas/listas.js"></script>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>

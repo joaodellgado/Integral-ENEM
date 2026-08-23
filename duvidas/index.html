@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="/global.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Integral ENEM | Dúvidas</title>
+  <link rel="stylesheet" href="/navbar/navbar.css" />
+  <link rel="stylesheet" href="/duvidas/duvidas.css" />
+  <link rel="icon" href="/imagens/integral-logo.png" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png" />
+  <link rel="manifest" href="/imagens/site.webmanifest" />
+</head>
+<body class="duvidas-page">
+  <div id="navbar-root"></div>
+  <script type="module" src="/navbar/navbar.js"></script>
+
+  <main class="duvidas-shell">
+    <header class="duvidas-hero" id="duvidas-hero">
+      <div class="duvidas-hero__copy">
+        <p class="duvidas-kicker">Central de Suporte Acadêmico</p>
+        <h1>Abra tickets de dúvidas e acompanhe o andamento</h1>
+        <p>
+          Envie sua dúvida com contexto completo. Organize por disciplina, prioridade e histórico para revisar depois.
+        </p>
+      </div>
+      <button type="button" class="primary-cta" id="open-ticket-form-btn">+ Novo Ticket</button>
+    </header>
+
+    <section class="duvidas-grid" id="duvidas-grid" aria-label="Área de tickets">
+      <aside class="duvidas-panel duvidas-panel--filters" aria-label="Filtros de tickets">
+        <h2>Filtros</h2>
+        <label class="field">
+          <span>Buscar</span>
+          <input type="search" id="ticket-search" placeholder="Título, matéria ou mensagem" />
+        </label>
+
+        <label class="field">
+          <span>Status</span>
+          <select id="status-filter">
+            <option value="all">Todos</option>
+            <option value="aberto">Aberto</option>
+            <option value="respondido">Respondido</option>
+            <option value="resolvido">Resolvido</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Matéria</span>
+          <select id="subject-filter">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+
+        <div class="legend">
+          <p>Resumo rápido</p>
+          <ul>
+            <li><span class="dot dot-open"></span>Abertos: <strong id="stat-open">0</strong></li>
+            <li><span class="dot dot-answered"></span>Respondidos: <strong id="stat-answered">0</strong></li>
+            <li><span class="dot dot-resolved"></span>Resolvidos: <strong id="stat-resolved">0</strong></li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="duvidas-panel duvidas-panel--list" aria-live="polite">
+        <div class="panel-header">
+          <h2>Meus tickets</h2>
+          <p id="tickets-count">0 ticket(s)</p>
+        </div>
+        <div id="tickets-list" class="tickets-list"></div>
+        <div id="tickets-pagination" class="tickets-pagination" hidden></div>
+        <div id="tickets-empty" class="empty-state" hidden>
+          <p>Nenhum ticket encontrado com os filtros atuais.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="ticket-open-view" id="ticket-open-view" hidden>
+      <button type="button" class="ticket-back-btn" id="ticket-back-btn">← Voltar</button>
+
+      <article class="ticket-open-card ticket-open-card--question">
+        <div class="ticket-open-badges">
+          <span class="ticket-open-badge is-status" id="open-view-status">Aberto</span>
+          <span class="ticket-open-badge is-subject" id="open-view-subject">Matéria</span>
+        </div>
+        <h2 id="open-view-title">Título da dúvida</h2>
+        <p class="ticket-open-meta" id="open-view-meta"></p>
+        <p class="ticket-open-message" id="open-view-message"></p>
+        <ul class="ticket-open-images" id="open-view-images" hidden></ul>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="ticket-form-modal" class="ticket-modal">
+    <form method="dialog" class="ticket-form" id="ticket-form">
+      <header>
+        <h2>Novo ticket de dúvida</h2>
+        <p>Descreva seu contexto para facilitar uma resposta completa.</p>
+      </header>
+
+      <label class="field">
+        <span>Título</span>
+        <input type="text" id="ticket-title" maxlength="120" required placeholder="Ex: Interpretação de função logarítmica" />
+      </label>
+
+      <label class="field">
+        <span>Matéria</span>
+        <select id="ticket-subject" required>
+          <option value="">Selecione</option>
+          <option>Matemática</option>
+          <option>Português</option>
+          <option>Redação</option>
+          <option>Física</option>
+          <option>Química</option>
+          <option>Biologia</option>
+          <option>História</option>
+          <option>Geografia</option>
+          <option>Filosofia</option>
+          <option>Sociologia</option>
+          <option>Inglês</option>
+          <option>Espanhol</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Descrição da dúvida</span>
+        <textarea id="ticket-description" rows="6" maxlength="3000" required placeholder="Explique exatamente onde travou, o que você tentou e qual era o objetivo da questão."></textarea>
+      </label>
+
+      <p class="ticket-single-question-note">
+        Atenção: crie somente <strong>1 questão por ticket</strong> para facilitar uma resposta precisa.
+      </p>
+
+      <section class="ticket-images-upload" aria-label="Anexos de imagens">
+        <input type="file" id="ticket-images-input" accept="image/*" multiple hidden />
+        <button type="button" class="ticket-images-badge" id="ticket-images-btn">+ Enviar imagens (até 5)</button>
+        <p class="ticket-images-hint" id="ticket-images-hint">Nenhuma imagem selecionada.</p>
+        <ul class="ticket-images-list" id="ticket-images-list"></ul>
+      </section>
+
+      <footer class="ticket-form-actions">
+        <button type="button" id="close-ticket-form-btn" class="ghost-cta">Cancelar</button>
+        <button type="submit" class="primary-cta">Criar ticket</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/authGuard.js"></script>
+  <script>
+    const { createClient } = window.supabase || {};
+    const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+    const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+    window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    window.adminGuardPromise = enforceAdminGuard();
+  </script>
+  <script src="/cache/profileCache.js"></script>
+  <script src="/duvidas/duvidas.js"></script>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>

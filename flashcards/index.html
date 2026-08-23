@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="/global.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Integral ENEM | Flashcards</title>
+  <link rel="stylesheet" href="/navbar/navbar.css" />
+  <link rel="stylesheet" href="/flashcards/flashcards.css" />
+  <link rel="icon" href="/imagens/integral-logo.png" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png" />
+  <link rel="manifest" href="/imagens/site.webmanifest" />
+</head>
+<body class="flashcards-page">
+  <div id="navbar-root"></div>
+  <script type="module" src="/navbar/navbar.js"></script>
+
+  <main class="page-shell">
+    <header class="page-header">
+      <div class="page-title-wrap">
+        <h1>Início</h1>
+        <button type="button" class="home-due-badge" id="home-due-badge">
+          Você tem 0 cartões para hoje!
+        </button>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="ghost-btn order-btn" id="open-order-menu-btn" hidden>Ordenar decks</button>
+        <button type="button" class="primary-btn" id="create-action-btn">+ Criar</button>
+      </div>
+    </header>
+
+    <section class="flashcards-panel" aria-labelledby="inicio-rapido-title">
+      <div class="decks-view-toggle" role="tablist" aria-label="Modo de visualização">
+        <button type="button" class="decks-view-tab is-active" id="decks-view-tab-mine" data-view="mine" role="tab" aria-selected="true">Meus Decks</button>
+        <button type="button" class="decks-view-tab" id="decks-view-tab-discover" data-view="discover" role="tab" aria-selected="false">Descobrir Cards</button>
+      </div>
+
+      <div class="decks-view-panel" id="decks-view-mine">
+        <div class="section-block" id="empty-home-section">
+          <h2 id="inicio-rapido-title">INÍCIO RÁPIDO</h2>
+          <div class="quick-grid">
+            <button type="button" class="quick-action" id="quick-create-btn">+ Criar Cartões</button>
+            <button type="button" class="quick-action" id="discover-shortcut-btn">Explorar biblioteca de cartões</button>
+          </div>
+        </div>
+
+        <div class="section-block decks-home-section" id="decks-home-section" aria-live="polite" hidden>
+          <div class="decks-grid" id="decks-grid"></div>
+          <div class="decks-empty" id="decks-empty">
+            Nenhum deck criado ainda.
+          </div>
+        </div>
+      </div>
+
+      <div class="decks-view-panel" id="discover-root" hidden>
+        <section class="discover-areas-view" id="discover-areas-view">
+          <header class="discover-header">
+            <h2>Descobrir Cards</h2>
+          </header>
+          <p class="discover-subtitle">Cards públicos criados pela equipe Integral ENEM, organizados por área.</p>
+          <div class="discover-areas-grid" id="discover-areas-grid"></div>
+        </section>
+
+        <section class="discover-subjects-view" id="discover-subjects-view" hidden>
+          <header class="discover-header">
+            <button type="button" class="deck-back-btn" id="discover-subjects-back-btn">← Áreas</button>
+            <h2 id="discover-subjects-title">Área</h2>
+          </header>
+          <p class="discover-subtitle">Matérias desta área.</p>
+          <div class="discover-subjects-list" id="discover-subjects-list"></div>
+        </section>
+
+        <section class="discover-contents-view" id="discover-contents-view" hidden>
+          <header class="discover-header">
+            <button type="button" class="deck-back-btn" id="discover-contents-back-btn">← Matérias</button>
+            <h2 id="discover-contents-title">Matéria</h2>
+          </header>
+          <p class="discover-subtitle">Conteúdos catalogados e cards públicos disponíveis.</p>
+          <div class="discover-subjects-list" id="discover-contents-list"></div>
+          <div class="discover-cards-empty" id="discover-contents-empty" hidden>Nenhum conteúdo catalogado para esta matéria ainda.</div>
+        </section>
+
+        <section class="discover-topics-view" id="discover-topics-view" hidden>
+          <header class="discover-header">
+            <button type="button" class="deck-back-btn" id="discover-topics-back-btn">← Conteúdos</button>
+            <h2 id="discover-topics-title">Conteúdo</h2>
+          </header>
+          <p class="discover-subtitle">Tópicos catalogados e cards públicos disponíveis.</p>
+          <div class="discover-subjects-list" id="discover-topics-list"></div>
+        </section>
+
+        <section class="discover-cards-view" id="discover-cards-view" hidden>
+          <header class="discover-header discover-header--grid">
+            <div class="discover-header-left">
+              <button type="button" class="deck-back-btn" id="discover-cards-back-btn">← Conteúdos</button>
+            </div>
+            <h2 id="discover-cards-title" class="discover-header-title">Matéria</h2>
+            <div class="discover-header-right">
+              <button type="button" class="primary-btn" id="discover-add-card-btn" hidden>+ Adicionar card</button>
+            </div>
+          </header>
+          <p class="discover-subtitle">Cards públicos disponíveis.</p>
+          <div class="discover-cards-list" id="discover-cards-list"></div>
+          <div class="discover-cards-empty" id="discover-cards-empty" hidden>Nenhum card disponível ainda neste conteúdo.</div>
+          <div class="discover-cards-pagination" id="discover-cards-pagination" hidden>
+            <button type="button" class="ghost-btn discover-cards-page-btn" id="discover-cards-prev-page">‹ Anterior</button>
+            <span class="discover-cards-page-info" id="discover-cards-page-info">Página 1 de 1</span>
+            <button type="button" class="ghost-btn discover-cards-page-btn" id="discover-cards-next-page">Próxima ›</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="deck-view" id="deck-view" hidden>
+      <header class="deck-view-header">
+        <div class="deck-left-actions">
+          <button type="button" class="deck-back-btn" id="deck-back-btn">← Voltar</button>
+        </div>
+        <h2 id="deck-view-title">Deck</h2>
+        <div class="view-header-actions">
+          <button type="button" class="primary-btn deck-add-btn" id="deck-add-topic-btn">Adicionar tópico</button>
+        </div>
+      </header>
+
+      <section class="deck-topics-panel" id="deck-topics-panel">
+        <div class="deck-empty-state" id="topics-empty-state">
+          <div class="deck-empty-icon">◫</div>
+          <p>Este deck ainda não tem tópicos</p>
+          <button type="button" class="deck-empty-action" id="topics-empty-add-btn">Adicionar tópico</button>
+        </div>
+        <div class="topics-list" id="topics-list" hidden></div>
+      </section>
+
+      <section class="topic-view-panel" id="topic-view-panel" hidden>
+        <header class="topic-view-header">
+          <div class="topic-left-actions">
+            <button type="button" class="deck-back-btn" id="topic-back-btn">← Tópicos</button>
+          </div>
+          <div class="topic-heading">
+            <p id="topic-deck-name" class="topic-deck-name">Deck</p>
+            <h3 id="topic-view-title">Tópico</h3>
+          </div>
+          <div class="view-header-actions">
+            <button type="button" class="ghost-btn deck-add-btn" id="topic-add-subtopic-btn">Adicionar subtópico</button>
+            <button type="button" class="primary-btn deck-add-btn" id="deck-add-card-btn">Adicionar cartões</button>
+          </div>
+        </header>
+
+        <section class="subtopic-toolbar" id="subtopic-toolbar" hidden>
+          <span class="subtopic-label">Subtópico</span>
+          <div class="subtopic-filter-menu" id="subtopic-filter-menu">
+            <button
+              type="button"
+              class="subtopic-filter-trigger"
+              id="subtopic-filter-trigger"
+              aria-haspopup="menu"
+              aria-expanded="false"
+            >
+              Todos
+            </button>
+            <div class="subtopic-filter-dropdown" id="subtopic-filter-dropdown" role="menu"></div>
+          </div>
+          <div class="subtopic-actions" id="subtopic-actions" hidden></div>
+        </section>
+
+        <div class="deck-empty-state" id="deck-empty-state">
+          <div class="deck-empty-icon">◫</div>
+          <p>Esta coleção não tem cartões</p>
+          <button type="button" class="deck-empty-action" id="deck-empty-add-btn">Adicionar cartões</button>
+        </div>
+
+        <section class="topic-highlight-card" id="topic-highlight-card" hidden>
+          <p class="topic-highlight-total" id="topic-highlight-total">0</p>
+          <p class="topic-highlight-subtitle">cartões para hoje</p>
+          <div class="topic-highlight-stats">
+            <article class="topic-highlight-stat">
+              <p class="topic-highlight-stat-value" id="topic-highlight-new">0</p>
+              <p class="topic-highlight-stat-label">Não estudados</p>
+            </article>
+            <article class="topic-highlight-stat">
+              <p class="topic-highlight-stat-value" id="topic-highlight-mastered">0</p>
+              <p class="topic-highlight-stat-label">Dominados</p>
+            </article>
+          </div>
+          <button type="button" class="topic-highlight-action" id="topic-highlight-action">Estudar cartões</button>
+        </section>
+
+        <section class="topic-cloud-sync-progress" id="topic-cloud-sync-progress" hidden>
+          <p class="topic-cloud-sync-progress-label" id="topic-cloud-sync-progress-label">
+            Enviando cartões para a nuvem...
+          </p>
+          <div
+            class="topic-cloud-sync-progress-track"
+            role="progressbar"
+            aria-label="Progresso de sincronização de cartões com a nuvem"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span class="topic-cloud-sync-progress-fill" id="topic-cloud-sync-progress-fill"></span>
+          </div>
+          <p class="topic-cloud-sync-progress-meta" id="topic-cloud-sync-progress-meta">0/0 enviados</p>
+        </section>
+
+        <section class="card-editor" id="card-editor" hidden>
+          <div class="editor-block">
+            <label class="editor-label">Frente</label>
+            <div class="editor-surface">
+              <div class="editor-area" id="front-editor" contenteditable="true" data-placeholder="Digite o texto aqui"></div>
+              <div class="editor-toolbar">
+                <button type="button" class="toolbar-btn" data-editor="front-editor" data-cmd="image" title="Inserir imagem" aria-label="Inserir imagem">
+                  <img src="/imagens/gallery.png" alt="" class="toolbar-icon" />
+                </button>
+                <button type="button" class="toolbar-btn" data-editor="front-editor" data-cmd="bold">B</button>
+                <button type="button" class="toolbar-btn" data-editor="front-editor" data-cmd="italic"><em>I</em></button>
+                <button type="button" class="toolbar-btn" data-editor="front-editor" data-cmd="underline"><u>U</u></button>
+                <button type="button" class="toolbar-btn" data-editor="front-editor" data-cmd="strike"><s>S</s></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="editor-block">
+            <label class="editor-label">Verso</label>
+            <div class="editor-surface">
+              <div class="editor-area" id="back-editor" contenteditable="true" data-placeholder="Digite o texto aqui"></div>
+              <div class="editor-toolbar">
+                <button type="button" class="toolbar-btn" data-editor="back-editor" data-cmd="image" title="Inserir imagem" aria-label="Inserir imagem">
+                  <img src="/imagens/gallery.png" alt="" class="toolbar-icon" />
+                </button>
+                <button type="button" class="toolbar-btn" data-editor="back-editor" data-cmd="bold">B</button>
+                <button type="button" class="toolbar-btn" data-editor="back-editor" data-cmd="italic"><em>I</em></button>
+                <button type="button" class="toolbar-btn" data-editor="back-editor" data-cmd="underline"><u>U</u></button>
+                <button type="button" class="toolbar-btn" data-editor="back-editor" data-cmd="strike"><s>S</s></button>
+              </div>
+            </div>
+          </div>
+
+          <label class="reverse-toggle">
+            <span>Cartões invertidos</span>
+            <input type="checkbox" id="reverse-toggle-input" />
+          </label>
+
+          <div class="editor-actions">
+            <button type="button" class="ghost-btn" id="card-editor-cancel-btn">Cancelar</button>
+            <button type="button" class="primary-btn" id="card-editor-save-btn">Salvar cartão</button>
+          </div>
+        </section>
+
+        <section class="deck-cards-list" id="deck-cards-list" hidden></section>
+      </section>
+    </section>
+  </main>
+
+  <div class="deck-modal" id="deck-modal" aria-hidden="true">
+    <div class="deck-modal-backdrop" data-modal-close></div>
+    <div class="deck-modal-card" role="dialog" aria-modal="true" aria-labelledby="deck-modal-title">
+      <h3 id="deck-modal-title">Criar novo deck</h3>
+      <p class="deck-modal-subtitle">Escolha um nome único para o seu deck.</p>
+      <label class="deck-modal-label" for="deck-name-input">Nome do deck</label>
+      <input
+        type="text"
+        id="deck-name-input"
+        class="deck-modal-input"
+        maxlength="60"
+        placeholder="Ex: Revisão de Biologia"
+      />
+      <div class="deck-color-picker">
+        <div class="deck-color-label">Cor do deck</div>
+        <div class="deck-color-presets" id="deck-color-presets">
+          <button type="button" class="color-preset" data-color="#1E63FF" aria-label="Azul Elétrico"></button>
+          <button type="button" class="color-preset" data-color="#7B2CFF" aria-label="Roxo Neon"></button>
+          <button type="button" class="color-preset" data-color="#E2417A" aria-label="Pink Vibrante"></button>
+          <button type="button" class="color-preset" data-color="#0ABF7A" aria-label="Verde Vibrante"></button>
+          <button type="button" class="color-preset" data-color="#FF8A1F" aria-label="Laranja Vivo"></button>
+          <button type="button" class="color-preset" data-color="#05C7E6" aria-label="Ciano Forte"></button>
+        </div>
+        <label class="custom-color-wrap" for="deck-custom-color-input">
+          Cor personalizada
+          <input type="color" id="deck-custom-color-input" class="deck-custom-color-input" value="#1E63FF" />
+        </label>
+      </div>
+      <div class="deck-modal-error" id="deck-modal-error"></div>
+      <div class="deck-modal-actions">
+        <button type="button" class="ghost-btn deck-modal-cancel" id="deck-modal-cancel">Cancelar</button>
+        <button type="button" class="primary-btn deck-modal-confirm" id="deck-modal-confirm">Criar deck</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-modal" id="order-modal" aria-hidden="true">
+    <div class="order-modal-backdrop" data-order-close></div>
+    <div class="order-modal-card" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+      <h3 id="order-modal-title">Mudar ordem dos decks</h3>
+      <p class="order-modal-subtitle">Organize como quiser. Você pode mover para cima ou para baixo.</p>
+      <ul class="order-list" id="order-list"></ul>
+      <div class="order-modal-actions">
+        <button type="button" class="ghost-btn order-cancel-btn" id="order-cancel-btn">Cancelar</button>
+        <button type="button" class="primary-btn order-save-btn" id="order-save-btn">Salvar ordem</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic-modal" id="topic-modal" aria-hidden="true">
+    <div class="topic-modal-backdrop" data-topic-close></div>
+    <div class="topic-modal-card" role="dialog" aria-modal="true" aria-labelledby="topic-modal-title">
+      <h3 id="topic-modal-title">Criar novo tópico</h3>
+      <p class="topic-modal-subtitle">Crie um tópico para organizar os cartões do deck.</p>
+      <label class="deck-modal-label" for="topic-name-input">Nome do tópico</label>
+      <input
+        type="text"
+        id="topic-name-input"
+        class="deck-modal-input"
+        maxlength="60"
+        placeholder="Ex: Funções quadráticas"
+      />
+      <div class="deck-modal-error" id="topic-modal-error"></div>
+      <div class="topic-modal-actions">
+        <button type="button" class="ghost-btn topic-modal-cancel" id="topic-modal-cancel">Cancelar</button>
+        <button type="button" class="primary-btn topic-modal-confirm" id="topic-modal-confirm">Criar tópico</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-modal" id="action-modal" aria-hidden="true">
+    <div class="action-modal-backdrop" data-action-close></div>
+    <div class="action-modal-card" role="dialog" aria-modal="true" aria-labelledby="action-modal-title">
+      <h3 id="action-modal-title">Ação</h3>
+      <p class="action-modal-subtitle" id="action-modal-subtitle"></p>
+      <label class="action-modal-label" id="action-modal-input-wrap" for="action-modal-input" hidden>
+        Novo nome
+        <input
+          type="text"
+          id="action-modal-input"
+          class="action-modal-input"
+          maxlength="80"
+          placeholder="Digite o novo nome"
+        />
+      </label>
+      <div class="action-modal-error" id="action-modal-error"></div>
+      <div class="action-modal-actions">
+        <button type="button" class="ghost-btn action-modal-cancel" id="action-modal-cancel">Cancelar</button>
+        <button type="button" class="primary-btn action-modal-confirm" id="action-modal-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="import-public-modal" id="import-public-modal" aria-hidden="true">
+    <div class="import-public-modal-backdrop" data-import-public-close></div>
+    <div class="import-public-modal-card" role="dialog" aria-modal="true" aria-labelledby="import-public-modal-title">
+      <button type="button" class="deck-modal-close-btn" id="import-public-close-btn" aria-label="Fechar" data-import-public-close>×</button>
+      <h3 id="import-public-modal-title">Importar cartão</h3>
+      <p class="import-public-modal-subtitle" id="import-public-modal-subtitle">Escolha onde salvar este cartão no seu deck.</p>
+
+      <div class="import-public-fields" id="import-public-fields">
+        <label class="public-field-label" for="import-public-deck-select">
+          Deck
+          <select id="import-public-deck-select" class="public-field-select"></select>
+        </label>
+        <label class="public-field-label" for="import-public-topic-select">
+          Tópico
+          <select id="import-public-topic-select" class="public-field-select"></select>
+        </label>
+        <label class="public-field-label" id="import-public-subtopic-wrap" for="import-public-subtopic-select" hidden>
+          Subtópico
+          <select id="import-public-subtopic-select" class="public-field-select"></select>
+        </label>
+      </div>
+
+      <div class="import-public-empty" id="import-public-empty" hidden>
+        Você ainda não tem nenhum deck com tópico.
+        <button type="button" class="ghost-btn" id="import-public-create-deck-btn">Criar deck</button>
+      </div>
+
+      <div class="import-public-modal-error" id="import-public-modal-error"></div>
+
+      <div class="import-public-modal-actions">
+        <button type="button" class="ghost-btn" id="import-public-cancel-btn" data-import-public-close>Cancelar</button>
+        <button type="button" class="primary-btn" id="import-public-confirm-btn">Importar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="public-card-editor-modal" id="public-card-editor-modal" aria-hidden="true">
+    <div class="public-card-editor-modal-backdrop" data-public-card-close></div>
+    <div class="public-card-editor-modal-card" role="dialog" aria-modal="true" aria-labelledby="public-card-editor-title">
+      <button type="button" class="deck-modal-close-btn" id="public-card-editor-close-btn" aria-label="Fechar" data-public-card-close>×</button>
+      <h3 id="public-card-editor-title">Novo card público</h3>
+      <p class="public-card-editor-subtitle">Visível e importável por todos os alunos.</p>
+
+      <label class="public-field-label" for="public-card-title-input">
+        Título
+        <input type="text" id="public-card-title-input" class="public-field-input" maxlength="80" placeholder="Ex: Leis de Newton" />
+      </label>
+
+      <label class="public-field-label" for="public-card-description-input">
+        Descrição
+        <textarea id="public-card-description-input" class="public-field-textarea" maxlength="240" rows="2" placeholder="Sobre o que é esse card"></textarea>
+      </label>
+
+      <div class="public-card-taxonomy-grid">
+        <label class="public-field-label" for="public-card-area-select">
+          Área
+          <select id="public-card-area-select" class="public-field-select"></select>
+        </label>
+        <label class="public-field-label" for="public-card-materia-select">
+          Matéria
+          <select id="public-card-materia-select" class="public-field-select"></select>
+        </label>
+        <label class="public-field-label" for="public-card-conteudo-select">
+          Conteúdo
+          <select id="public-card-conteudo-select" class="public-field-select"></select>
+        </label>
+        <label class="public-field-label" for="public-card-topico-select">
+          Tópico
+          <select id="public-card-topico-select" class="public-field-select"></select>
+        </label>
+      </div>
+
+      <section class="card-editor" id="public-card-editor-fields">
+        <div class="editor-block">
+          <label class="editor-label">Frente</label>
+          <div class="editor-surface">
+            <div class="editor-area" id="public-front-editor" contenteditable="true" data-placeholder="Digite o texto aqui"></div>
+            <div class="editor-toolbar">
+              <button type="button" class="toolbar-btn" data-editor="public-front-editor" data-cmd="image" title="Inserir imagem" aria-label="Inserir imagem">
+                <img src="/imagens/gallery.png" alt="" class="toolbar-icon" />
+              </button>
+              <button type="button" class="toolbar-btn" data-editor="public-front-editor" data-cmd="bold">B</button>
+              <button type="button" class="toolbar-btn" data-editor="public-front-editor" data-cmd="italic"><em>I</em></button>
+              <button type="button" class="toolbar-btn" data-editor="public-front-editor" data-cmd="underline"><u>U</u></button>
+              <button type="button" class="toolbar-btn" data-editor="public-front-editor" data-cmd="strike"><s>S</s></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-block">
+          <label class="editor-label">Verso</label>
+          <div class="editor-surface">
+            <div class="editor-area" id="public-back-editor" contenteditable="true" data-placeholder="Digite o texto aqui"></div>
+            <div class="editor-toolbar">
+              <button type="button" class="toolbar-btn" data-editor="public-back-editor" data-cmd="image" title="Inserir imagem" aria-label="Inserir imagem">
+                <img src="/imagens/gallery.png" alt="" class="toolbar-icon" />
+              </button>
+              <button type="button" class="toolbar-btn" data-editor="public-back-editor" data-cmd="bold">B</button>
+              <button type="button" class="toolbar-btn" data-editor="public-back-editor" data-cmd="italic"><em>I</em></button>
+              <button type="button" class="toolbar-btn" data-editor="public-back-editor" data-cmd="underline"><u>U</u></button>
+              <button type="button" class="toolbar-btn" data-editor="public-back-editor" data-cmd="strike"><s>S</s></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="public-card-editor-error" id="public-card-editor-error"></div>
+
+      <div class="editor-actions">
+        <button type="button" class="ghost-btn" id="public-card-cancel-btn" data-public-card-close>Cancelar</button>
+        <button type="button" class="primary-btn" id="public-card-save-btn">Publicar card</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="discover-preview-modal" id="discover-preview-modal" aria-hidden="true">
+    <div class="discover-preview-modal-backdrop" data-discover-preview-close></div>
+    <div class="discover-preview-modal-card" role="dialog" aria-modal="true" aria-labelledby="discover-preview-title">
+      <button type="button" class="deck-modal-close-btn" id="discover-preview-close-btn" aria-label="Fechar" data-discover-preview-close>×</button>
+
+      <h3 id="discover-preview-title">Título do card</h3>
+      <p class="discover-preview-desc" id="discover-preview-desc"></p>
+
+      <div class="discover-preview-author">
+        <img class="discover-preview-author-avatar" id="discover-preview-author-avatar" src="/imagens/default-avatar.png" alt="" />
+        <div class="discover-preview-author-info">
+          <span class="discover-preview-author-name" id="discover-preview-author-name">Autor</span>
+          <span class="role-badge role-admin">ADMIN</span>
+        </div>
+      </div>
+
+      <div class="discover-preview-face">
+        <p class="discover-preview-face-label">Frente</p>
+        <div class="discover-preview-face-text" id="discover-preview-front"></div>
+      </div>
+      <div class="discover-preview-face">
+        <p class="discover-preview-face-label">Verso</p>
+        <div class="discover-preview-face-text" id="discover-preview-back"></div>
+      </div>
+
+      <div class="discover-preview-nav">
+        <button type="button" class="discover-preview-nav-btn" id="discover-preview-prev-btn" aria-label="Card anterior">‹</button>
+        <span class="discover-preview-nav-counter" id="discover-preview-counter">1 de 1</span>
+        <button type="button" class="discover-preview-nav-btn" id="discover-preview-next-btn" aria-label="Próximo card">›</button>
+      </div>
+
+      <div class="editor-actions">
+        <button type="button" class="ghost-btn" id="discover-preview-cancel-btn" data-discover-preview-close>Fechar</button>
+        <button type="button" class="primary-btn" id="discover-preview-import-btn">Importar este card</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="study-modal" id="study-modal" aria-hidden="true">
+    <div class="study-modal-backdrop" data-study-close></div>
+    <div class="study-modal-card" role="dialog" aria-modal="true" aria-labelledby="study-modal-title">
+      <header class="study-modal-header">
+        <h3 id="study-modal-title">Estudo de cartões</h3>
+        <button type="button" class="study-close-btn" id="study-close-btn" aria-label="Fechar estudo">×</button>
+      </header>
+
+      <p class="study-modal-meta" id="study-modal-meta">0 de 0</p>
+
+      <article class="study-face study-face-front">
+        <p class="study-face-label">Frente</p>
+        <p class="study-face-text" id="study-front-text"></p>
+      </article>
+
+      <article class="study-face study-face-back" id="study-back-face" hidden>
+        <p class="study-face-label">Verso</p>
+        <p class="study-face-text" id="study-back-text"></p>
+      </article>
+
+      <div class="study-modal-actions">
+        <button type="button" class="ghost-btn study-prev-btn" id="study-prev-btn" hidden>Voltar</button>
+        <button type="button" class="ghost-btn study-reveal-btn" id="study-reveal-btn">Mostrar resposta</button>
+        <button type="button" class="ghost-btn study-hide-btn" id="study-hide-btn" hidden>Ocultar resposta</button>
+        <button type="button" class="ghost-btn study-mastered-btn" id="study-mastered-btn">Marcar dominado</button>
+        <button type="button" class="primary-btn study-next-btn" id="study-next-btn">Próximo</button>
+      </div>
+
+      <div class="study-rating-panel" id="study-rating-panel" hidden>
+        <button type="button" class="study-rating-btn is-again" data-minutes="0">
+          <span>De novo</span>
+          <small>Agora</small>
+        </button>
+        <button type="button" class="study-rating-btn is-hard" data-minutes="45">
+          <span>Difícil</span>
+          <small>45m</small>
+        </button>
+        <button type="button" class="study-rating-btn is-medium" data-minutes="1440">
+          <span>Médio</span>
+          <small>1 dia</small>
+        </button>
+        <button type="button" class="study-rating-btn is-excellence" data-minutes="10080">
+          <span>Excelência</span>
+          <small>7 dias</small>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script src="/authGuard.js"></script>
+  <script>
+    const { createClient } = window.supabase || {};
+    const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+    const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+    window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    window.adminGuardPromise = enforceAdminGuard();
+  </script>
+  <script src="/cache/flashcardsCache.js"></script>
+  <script src="/cache/profileCache.js"></script>
+  <script src="/materias/opcoes.js"></script>
+  <script src="/materias/topicos/matematica.js"></script>
+  <script src="/flashcards/flashcards.js"></script>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>

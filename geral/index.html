@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integral ENEM | Visão Geral</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="/theme.js"></script>
+    <link rel="icon" href="/imagens/integral-logo.png" type="image/png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png" />
+    <link rel="manifest" href="/imagens/site.webmanifest" />
+    <link rel="stylesheet" href="/navbar/navbar.css" />
+    <link rel="stylesheet" href="/geral/geral.css" />
+  </head>
+  <body class="geral-page">
+    <div id="navbar-root"></div>
+    <script type="module" src="/navbar/navbar.js"></script>
+
+    <section class="geral-hero outside">
+      <div class="geral-hero__left">
+        <div class="geral-hero__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h2 class="geral-hero__title">Visão Geral</h2>
+          <p class="geral-hero__sub">Desempenho acadêmico completo</p>
+        </div>
+      </div>
+      <div class="period-tabs" id="periodTabs" role="tablist" aria-label="Período">
+        <button class="period-tab is-active" data-period="all" role="tab" aria-selected="true">Tudo</button>
+        <button class="period-tab" data-period="3m" role="tab" aria-selected="false">3 meses</button>
+        <button class="period-tab" data-period="1m" role="tab" aria-selected="false">1 mês</button>
+      </div>
+    </section>
+
+    <main class="geral-app" id="geralApp">
+
+      <section class="enem-countdown" id="enemCountdown" aria-label="Contagem regressiva para o ENEM 2026">
+        <div class="enem-countdown__glow" aria-hidden="true"></div>
+        <div class="enem-countdown__glow enem-countdown__glow--2" aria-hidden="true"></div>
+
+        <div class="enem-countdown__info">
+          <span class="enem-countdown__badge">
+            <span class="enem-countdown__dot" aria-hidden="true"></span>
+            ENEM 2026
+          </span>
+          <h3 class="enem-countdown__title" id="enemCountdownTitle">Calculando contagem regressiva…</h3>
+          <p class="enem-countdown__sub" id="enemCountdownSub">7 e 15 de novembro de 2026</p>
+        </div>
+
+        <div class="enem-countdown__timer" id="enemCountdownTimer">
+          <div class="enem-countdown__unit">
+            <span class="enem-countdown__value" id="cdDays">00</span>
+            <span class="enem-countdown__label">dias</span>
+          </div>
+          <div class="enem-countdown__unit">
+            <span class="enem-countdown__value" id="cdHours">00</span>
+            <span class="enem-countdown__label">horas</span>
+          </div>
+          <div class="enem-countdown__unit">
+            <span class="enem-countdown__value" id="cdMinutes">00</span>
+            <span class="enem-countdown__label">min</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="geral-loading" id="geralLoading" aria-live="polite" aria-label="Carregando estatísticas">
+        <div class="geral-loading__bar"></div>
+      </div>
+
+      <div id="geralContent" hidden>
+
+        <!-- Level Showcase -->
+        <section class="level-showcase" id="levelShowcase" aria-label="Classificação e progresso"></section>
+
+        <!-- KPI Row -->
+        <section class="kpi-row" id="kpiRow" aria-label="Métricas principais"></section>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+
+          <div class="stat-card chart-card" id="weeklyChartCard">
+            <div class="stat-card__header">
+              <div>
+                <p class="stat-card__eyebrow">Horas de Estudo</p>
+                <h3 class="stat-card__title">Atividade Semanal</h3>
+              </div>
+              <span class="chart-legend" id="weeklyChartLegend"></span>
+            </div>
+            <div class="bar-chart-wrap" id="weeklyChartBody" aria-label="Gráfico de horas por semana"></div>
+          </div>
+
+          <div class="stat-card chart-card" id="subjectChartCard">
+            <div class="stat-card__header">
+              <div>
+                <p class="stat-card__eyebrow">Questões</p>
+                <h3 class="stat-card__title">Por Disciplina</h3>
+              </div>
+            </div>
+            <div class="subject-bars" id="subjectBarsBody"></div>
+          </div>
+
+        </div>
+
+        <!-- Subject table -->
+        <div class="stat-card table-card">
+          <div class="stat-card__header">
+            <div>
+              <p class="stat-card__eyebrow">Detalhamento</p>
+              <h3 class="stat-card__title">Desempenho por Disciplina</h3>
+            </div>
+          </div>
+          <div class="subject-table-wrap" id="subjectTableWrap"></div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/authGuard.js"></script>
+    <script>
+      const { createClient } = window.supabase || {};
+      const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+      const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+      window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+      window.adminGuardPromise = enforceAdminGuard();
+    </script>
+    <script src="/cache/profileCache.js"></script>
+    <script src="/geral/countdown.js"></script>
+    <script src="/geral/geral.js"></script>
+  </body>
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integral ENEM | Calendário de Estudos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="/theme.js"></script>
+    <link rel="icon" href="/imagens/integral-logo.png" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
+    <link rel="manifest" href="/imagens/site.webmanifest">
+    <link rel="stylesheet" href="/navbar/navbar.css" />
+    <link rel="stylesheet" href="/calendario/calendario.css" />
+  </head>
+  <body class="cronograma-page">
+    <div id="navbar-root"></div>
+    <script type="module" src="/navbar/navbar.js"></script>
+    <div class="bg-orb orb-a" aria-hidden="true"></div>
+    <div class="bg-orb orb-b" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <section class="schedule-intro outside">
+      <div class="schedule-icon" aria-hidden="true">
+        <img class="schedule-icon-img light" src="/imagens/dark-rocket.png" alt="" />
+        <img class="schedule-icon-img dark" src="/imagens/white-rocket.png" alt="" />
+      </div>
+      <div class="schedule-title-wrap">
+        <div class="schedule-title-row">
+          <h2>Calendário de Estudos</h2>
+          <div class="schedule-badges">
+            <button
+              class="schedule-badge schedule-badge--secondary"
+              type="button"
+              id="monthlyGoalsButton"
+              aria-label="Minhas Metas Mensais"
+            >
+              Minhas Metas Mensais
+            </button>
+            <button
+              class="schedule-badge"
+              type="button"
+              id="reportMenuButton"
+              aria-label="Relatórios Mensais"
+            >
+              Relatórios Mensais
+            </button>
+          </div>
+        </div>
+        <p>Aqui você vai acompanhar todo o seu progresso de estudos ao longo do ano.</p>
+      </div>
+    </section>
+
+    <main class="app">
+      <header class="week-header">
+        <div class="week-title">
+          <div class="week-title__top">
+            <h1 class="week-range" id="monthRange">Carregando...</h1>
+            <div class="week-nav" aria-label="Navegar meses">
+              <button class="week-nav-btn" id="prevMonth" type="button" aria-label="Mês anterior">
+                ‹
+              </button>
+              <button class="week-nav-btn" id="nextMonth" type="button" aria-label="Mês seguinte">
+                ›
+              </button>
+            </div>
+          </div>
+          <div class="month-stats" id="monthSummary"></div>
+        </div>
+        <div class="week-actions">
+          <button class="ghost week-export-btn" id="exportMonthImageBtn" type="button">
+            Gerar Imagem
+          </button>
+          <button class="ghost week-today-btn" id="currentMonthBtn" type="button">
+            Voltar para mês atual
+          </button>
+        </div>
+      </header>
+
+      <section class="month-grid-wrap">
+        <div class="month-grid__weekdays">
+          <span>Seg</span>
+          <span>Ter</span>
+          <span>Qua</span>
+          <span>Qui</span>
+          <span>Sex</span>
+          <span>Sáb</span>
+          <span>Dom</span>
+        </div>
+        <div class="month-grid" id="monthGrid"></div>
+      </section>
+    </main>
+
+    <div class="day-menu" id="dayMenu" aria-hidden="true">
+      <div class="day-menu__backdrop" data-day-close></div>
+      <div class="day-menu__panel" role="dialog" aria-modal="true" aria-labelledby="dayMenuTitle">
+        <header class="day-menu__header">
+          <div>
+            <p class="day-menu__eyebrow" id="dayMenuWeekday">Segunda-feira</p>
+            <h3 id="dayMenuTitle">--/--</h3>
+          </div>
+          <div class="day-menu__header-actions">
+            <div class="day-menu__planned-wrap" hidden>
+              <img class="day-menu__planned" src="/imagens/documento.png" alt="Dia planejado com antecedência" role="button" tabindex="0" aria-expanded="false" />
+              <div class="day-menu__planned-tooltip" role="status" aria-live="polite">
+                Show! Esse dia foi planejado com antecedência.
+              </div>
+            </div>
+            <button class="day-menu__close" type="button" data-day-close aria-label="Fechar">
+              <img src="/imagens/close.png" alt="" />
+            </button>
+          </div>
+        </header>
+        <div class="day-menu__tabs" role="tablist">
+          <button class="day-menu__tab is-active" type="button" data-day-tab="plan" role="tab" aria-selected="true">
+            Planejamento Diário
+          </button>
+          <button class="day-menu__tab" type="button" data-day-tab="study" role="tab" aria-selected="false">
+            Registro de Estudos
+          </button>
+        </div>
+        <div class="day-menu__body">
+          <div class="day-plan" data-day-panel="plan">
+            <ul class="task-list" id="dayTaskList"></ul>
+            <button class="task-add-btn" type="button" id="dayTaskAddBtn">
+              <span class="task-add-btn__icon" aria-hidden="true">+</span> Novo item
+            </button>
+          </div>
+          <article class="day-column" data-day="monday" data-day-panel="study" hidden>
+            <ul class="entries"></ul>
+            <button class="add-slot-btn" type="button" data-day="monday">Adicionar bloco</button>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="subject-menu" id="subjectMenu" aria-hidden="true">
+      <div class="subject-menu__backdrop" data-menu-close></div>
+      <div
+        class="subject-menu__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="subjectMenuTitle"
+      >
+        <header class="subject-menu__header">
+          <div>
+            <p class="subject-menu__eyebrow">Adicionar bloco</p>
+            <h3 id="subjectMenuTitle">Escolha uma disciplina</h3>
+          </div>
+          <button class="subject-menu__close" type="button" data-menu-close aria-label="Fechar">
+            <img src="/imagens/close.png" alt="" />
+          </button>
+        </header>
+        <div class="subject-menu__body">
+          <div class="subject-menu__step subject-menu__step--subjects">
+            <div class="subject-menu__grid" id="subjectMenuSubjects"></div>
+          </div>
+          <div class="subject-menu__step subject-menu__step--contents" hidden>
+            <button class="subject-menu__back" type="button" id="subjectMenuBack">
+              ← Voltar
+            </button>
+            <h4 class="subject-menu__subtitle" id="subjectMenuSubtitle"></h4>
+            <div class="subject-menu__list" id="subjectMenuContents"></div>
+          </div>
+          <div class="subject-menu__step subject-menu__step--details" hidden>
+            <button class="subject-menu__back" type="button" id="subjectMenuBackDetails">
+              ← Voltar
+            </button>
+            <h4 class="subject-menu__subtitle">Resumo do estudo</h4>
+            <div class="subject-menu__form">
+              <label class="subject-menu__field">
+                <span>Horas estudadas</span>
+                <input id="subjectMenuHours" type="number" min="0" step="0.5" placeholder="Ex: 2" />
+              </label>
+              <label class="subject-menu__field">
+                <span>Questões feitas</span>
+                <input id="subjectMenuQuestions" type="number" min="0" step="1" placeholder="Ex: 20" />
+              </label>
+              <label class="subject-menu__field" id="subjectMenuEssayField" hidden>
+                <span>Nota da redação</span>
+                <input id="subjectMenuEssay" type="number" min="0" step="1" placeholder="Ex: 900" />
+              </label>
+              <label class="subject-menu__field">
+                <span>Subtópico <span class="subject-menu__field-optional">(opcional)</span></span>
+                <input id="subjectMenuSubtopic" type="text" placeholder="Ex: Cinemática escalar, Equações do 2° grau…" list="subtopicSuggestions" autocomplete="off" />
+                <datalist id="subtopicSuggestions"></datalist>
+              </label>
+              <button class="subject-menu__confirm" type="button" id="subjectMenuConfirm">
+                Salvar bloco
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reports-menu" id="reportMenu" aria-hidden="true">
+      <div class="reports-menu__backdrop" data-report-close></div>
+      <div class="reports-menu__panel" role="dialog" aria-modal="true" aria-labelledby="reportMenuTitle">
+        <header class="reports-menu__header">
+          <div>
+            <p class="reports-menu__eyebrow">Relatórios</p>
+            <h3 id="reportMenuTitle">Relatórios Mensais</h3>
+          </div>
+          <button class="reports-menu__close" type="button" data-report-close aria-label="Fechar">
+            <img src="/imagens/close.png" alt="" />
+          </button>
+        </header>
+        <div class="reports-menu__body">
+          <div class="reports-menu__months" id="reportMonths"></div>
+          <div class="reports-menu__stats" id="reportStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="goals-menu" id="goalsMenu" aria-hidden="true">
+      <div class="goals-menu__backdrop" data-goals-close></div>
+      <div class="goals-menu__panel" role="dialog" aria-modal="true" aria-labelledby="goalsMenuTitle">
+        <header class="goals-menu__header">
+          <div>
+            <p class="goals-menu__eyebrow">Metas</p>
+            <h3 id="goalsMenuTitle">Definir Metas</h3>
+          </div>
+          <button class="goals-menu__close" type="button" data-goals-close aria-label="Fechar">
+            <img src="/imagens/close.png" alt="" />
+          </button>
+        </header>
+        <div class="goals-menu__body">
+          <div class="goals-menu__section">
+            <h4>Estudo diário</h4>
+            <label class="goals-menu__field">
+              <span>Meta de horas por dia</span>
+              <input id="goalHoursPerDay" type="number" min="0" step="0.5" placeholder="Ex: 3" />
+            </label>
+            <label class="goals-menu__field">
+              <span>Meta de questões por dia</span>
+              <input id="goalQuestionsPerDay" type="number" min="0" step="1" placeholder="Ex: 40" />
+            </label>
+          </div>
+          <div class="goals-menu__actions">
+            <button class="goals-menu__save" type="button" id="goalsMenuSave">
+              Salvar Metas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="/authGuard.js"></script>
+    <script>
+      const { createClient } = window.supabase || {};
+      const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+      const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+      window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+      window.adminGuardPromise = enforceAdminGuard();
+    </script>
+    <script src="/cache/profileCache.js"></script>
+    <script src="/materias/opcoes.js"></script>
+    <script src="/materias/topicos/matematica.js"></script>
+    <script src="/calendario/calendario.js"></script>
+    <script type="module">
+      import { startupApp } from "/dist/app/startup.js";
+      startupApp();
+    </script>
+  </body>
+</html>

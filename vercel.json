@@ -1,0 +1,85 @@
+{
+  "functions": {
+    "api/flashcards/scanner.js": {
+      "maxDuration": 120
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/config.js",
+      "destination": "/api/config"
+    },
+    {
+      "source": "/questoes/banco",
+      "destination": "/questoes/banco.html"
+    },
+    {
+      "source": "/questoes/buscar",
+      "destination": "/questoes/buscar.html"
+    },
+    {
+      "source": "/questoes/gerar-lista",
+      "destination": "/questoes/gerar-lista.html"
+    },
+    {
+      "source": "/questoes/listas",
+      "destination": "/questoes/listas.html"
+    },
+    {
+      "source": "/questoes/diagramacao",
+      "destination": "/questoes/diagramacao.html"
+    },
+    {
+      "source": "/questoes/leitor-pdf",
+      "destination": "/questoes/leitor-pdf.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jornada",
+      "destination": "/jornada.html"
+    },
+    {
+      "source": "/geral",
+      "destination": "/geral.html"
+    },
+    {
+      "source": "/logs",
+      "destination": "/logs.html"
+    },
+    {
+      "source": "/calendario",
+      "destination": "/calendario.html"
+    },
+    {
+      "source": "/perfil/info",
+      "destination": "/perfil/info.html"
+    },
+    {
+      "source": "/flashcards",
+      "destination": "/flashcards/index.html"
+    },
+    {
+      "source": "/duvidas",
+      "destination": "/duvidas/index.html"
+    },
+    {
+      "source": "/simulados",
+      "destination": "/simulados/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/calendario.html"
+    }
+  ]
+}

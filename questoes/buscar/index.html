@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="/global.css" />
+  <meta charset="UTF-8" />
+  <title>Integral ENEM | Buscar Questões - Banco Privado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/navbar/navbar.css" />
+  <link rel="icon" href="/imagens/integral-logo.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
+  <link rel="manifest" href="/imagens/site.webmanifest">
+  <link rel="stylesheet" href="/questoes/buscar/buscar.css" />
+</head>
+<body>
+  <div id="navbar-root"></div>
+  <script type="module" src="/navbar/navbar.js"></script>
+
+  <div class="page-shell">
+    <div class="search-layout">
+      <div class="container">
+      <div class="header-row">
+        <h1>Buscar Questões</h1>
+      </div>
+
+      <p class="filters-label">Parâmetros de busca</p>
+      <div class="filters">
+        <select id="filter-area">
+          <option value="">Área</option>
+          <option value="matematica">Matemática</option>
+          <option value="fisica">Física</option>
+          <option value="biologia">Biologia</option>
+          <option value="quimica">Química</option>
+          <option value="historia">História</option>
+          <option value="geografia">Geografia</option>
+          <option value="sociologia">Sociologia</option>
+          <option value="filosofia">Filosofia</option>
+          <option value="linguagens">Linguagens</option>
+        </select>
+        <input type="text" id="filter-keyword" placeholder="Palavra-chave">
+
+        <select id="filter-year">
+          <option value="">Ano</option>
+        </select>
+        <select id="filter-modality">
+          <option value="">Instituição</option>
+        </select>
+        <select id="filter-content">
+          <option value="">Conteúdo</option>
+        </select>
+
+        <select id="filter-topic">
+          <option value="">Tópico</option>
+        </select>
+
+        <div class="enem-only filter-competencia">
+          <select id="filter-competencia">
+            <option value="">Competência</option>
+          </select>
+        </div>
+
+        <div class="enem-only filter-habilidade">
+          <select id="filter-habilidade">
+            <option value="">Habilidade</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="results-summary-row">
+        <div class="results-count-pill" id="results-count"></div>
+        <div class="results-filter">
+          <button class="results-filter-icon" id="results-filter-btn" type="button" aria-haspopup="true" aria-expanded="false">
+            <img src="/imagens/white-filter.png" alt="Filtros" id="results-filter-img" />
+          </button>
+          <div class="results-filter-menu" id="results-filter-menu" role="menu" aria-hidden="true">
+            <div class="results-filter-title">Filtrar questões</div>
+            <button class="results-filter-option is-active" type="button" data-filter="all">Mostrar todas</button>
+            <button class="results-filter-option" type="button" data-filter="incorrect">Somente incorretas</button>
+          </div>
+        </div>
+      </div>
+      <div class="results-cards" id="results-cards">
+        <div class="no-results">Defina os parâmetros de busca!</div>
+      </div>
+      <div class="pagination" id="pagination">
+        <button class="pagination-btn" type="button" data-page="prev">Anterior</button>
+        <div class="pagination-pages" id="pagination-pages"></div>
+        <button class="pagination-btn" type="button" data-page="next">Próxima</button>
+      </div>
+      </div>
+
+      <aside class="search-panel" aria-label="Resumo de desempenho">
+        <div class="panel-header">
+          <div class="panel-stat">
+            <span class="panel-label">Questões feitas</span>
+            <span class="panel-value">-</span>
+          </div>
+          <div class="panel-divider"></div>
+          <div class="panel-stat">
+            <div class="panel-label-row">
+              <span class="panel-label">Taxa de acerto</span>
+              <span class="panel-info" aria-hidden="true">i</span>
+            </div>
+            <span class="panel-value">-</span>
+          </div>
+        </div>
+
+        <button class="panel-toggle" type="button">
+          <span>Ocultar últimas questões</span>
+          <span aria-hidden="true">▴</span>
+        </button>
+
+        <div class="panel-message">
+          <strong>Você não respondeu questões hoje.</strong>
+          <span>Responda agora!</span>
+        </div>
+
+        <a class="panel-link" href="#" onclick="return false;">Ver desempenho completo</a>
+        <div class="results-scorecards" id="results-scorecards">
+          <div class="panel-scorecard panel-scorecard-good">
+            <span class="panel-scorecard-value">-</span>
+            <span class="panel-scorecard-label">corretas</span>
+          </div>
+          <div class="panel-scorecard panel-scorecard-bad">
+            <span class="panel-scorecard-value">-</span>
+            <span class="panel-scorecard-label">erradas</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  <!-- Modal de visualização/resposta da questão -->
+  <div class="question-modal-overlay" id="question-modal-overlay">
+    <div class="question-modal">
+      <div class="question-modal-header">
+        <div>
+          <div class="question-modal-title" id="question-modal-title">QUESTÃO</div>
+          <div class="question-modal-meta" id="question-modal-meta"></div>
+        </div>
+        <div class="question-modal-header-right">
+          <div class="question-modal-nav">
+            <button type="button" class="question-modal-arrow" id="question-modal-prev" aria-label="Questão anterior">‹</button>
+            <button type="button" class="question-modal-arrow" id="question-modal-next" aria-label="Próxima questão">›</button>
+          </div>
+          <button type="button" class="question-modal-close" id="question-modal-close">Fechar</button>
+        </div>
+      </div>
+      <div class="question-modal-body">
+        <div class="question-modal-section-title">Texto</div>
+        <div class="question-modal-stem" id="question-modal-text"></div>
+        <img id="question-modal-image" class="question-modal-image" alt="Imagem da questão" style="display:none;" />
+
+        <div class="question-modal-section-title" id="question-modal-enunciado-title" style="display:none;">Enunciado</div>
+        <div class="question-modal-stem" id="question-modal-enunciado"></div>
+        <div class="question-modal-source" id="question-modal-source" style="display:none;"></div>
+
+        <div class="question-modal-section-title">Alternativas</div>
+        <ol class="question-modal-options" id="question-modal-options"></ol>
+
+        <div class="question-modal-answer" id="question-modal-answer">
+          <div><strong>Gabarito:</strong> <span id="question-modal-gabarito"></span></div>
+          <div class="question-modal-explainer" id="question-modal-explainer"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/materias/opcoes.js"></script>
+  <script src="/materias/topicos/matematica.js"></script>
+  <script src="/questoes/instituicoes.js"></script>
+  <script src="/authGuard.js"></script>
+  <script src="/questoes/buscar/buscar.js"></script>
+
+  <div class="brand-footer">
+    <div class="brand-lockup">
+      <img src="/imagens/integral-black-logo.png" alt="Logo Integral ENEM" class="butterfly-logo butterfly-logo--light" />
+      <img src="/imagens/integral-white-logo.png" alt="Logo Integral ENEM" class="butterfly-logo butterfly-logo--dark" />
+    </div>
+  </div>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+  <title>Integral ENEM | Imprimir Lista de Questões</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="../imagens/integral-logo.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../imagens/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../imagens/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../imagens/favicon-16x16.png">
+  <link rel="manifest" href="../imagens/site.webmanifest">
+  <style>
+    /* ============================================================
+       RESET & GLOBALS
+    ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @page :blank {
+      display: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 72px 0 14mm;
+      background: #e5eaf2;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+    }
+
+    /* ============================================================
+       TOOLBAR
+    ============================================================ */
+    .download-toolbar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px 8px 8px;
+      border-radius: 999px;
+      border: 1px solid #c9d3e4;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 28px rgba(14, 45, 90, 0.18);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .download-badge-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #0e2d5a 0%, #1a4fa0 60%, #1e5ccf 100%);
+      color: #eff6ff;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(14, 62, 160, 0.36);
+      transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .download-badge-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(14, 62, 160, 0.44);
+      filter: brightness(1.05);
+    }
+
+    .download-badge-btn:disabled {
+      cursor: wait;
+      opacity: 0.72;
+      transform: none;
+    }
+
+    .download-hint {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.3;
+      color: #475569;
+      font-weight: 600;
+      max-width: 270px;
+    }
+
+    .download-hint strong {
+      color: #0f172a;
+    }
+
+    .toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background: #d1d5db;
+      flex-shrink: 0;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .zoom-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #d1d5db;
+      background: #f1f5f9;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1;
+      color: #0f172a;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s, border-color 0.12s;
+      padding: 0;
+    }
+
+    .zoom-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .zoom-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #374151;
+      min-width: 38px;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    /* ============================================================
+       PAGES CONTAINER
+    ============================================================ */
+    .pages-root {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14mm;
+    }
+
+    /* ============================================================
+       PAGE
+    ============================================================ */
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 6px 28px rgba(14, 45, 90, 0.15);
+      padding: 13mm;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      page-break-after: always;
+      break-after: page;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page.last-page {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+    ============================================================ */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 5px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .page-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      transform: scale(1.75);
+      transform-origin: center center;
+    }
+
+    .brand-name {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #0e2d5a;
+      white-space: nowrap;
+    }
+
+    .page-header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #0e2d5a;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .page-header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .page-badge {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #e5eaf2;
+      background: #0e2d5a;
+      padding: 4px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .page-header-divider {
+      height: 2px;
+      background: #0e2d5a;
+      border-radius: 0;
+      margin: 0 0 8px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       PAGE BODY — 2-COLUMN GRID
+    ============================================================ */
+    .page-body {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 28px;
+      row-gap: 0;
+      position: relative;
+      overflow: visible;
+    }
+
+    .page-body--single {
+      grid-template-columns: 1fr;
+    }
+
+    .col-sep {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-0.5px);
+      top: 0;
+      height: 100%;
+      width: 1px;
+      background: #111827;
+    }
+
+    .column {
+      display: block;
+      overflow: visible;
+    }
+
+    /* ============================================================
+       EMPTY STATE
+    ============================================================ */
+    .empty-state {
+      width: 210mm;
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 24px;
+      text-align: center;
+      color: #6b7280;
+      border: 1px dashed #d1d5db;
+      font-size: 13px;
+    }
+
+    /* ============================================================
+       QUESTION BLOCK
+    ============================================================ */
+    .question-block {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 8px 0 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .question-block:last-child {
+      border-bottom: none;
+    }
+
+    /* Header bar */
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #0e2d5a;
+      color: #e9f2ff;
+      padding: 4px 8px;
+      border-radius: 3px;
+      margin-bottom: 6px;
+      min-height: 20px;
+    }
+
+    .question-header-left {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .question-header-center {
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-align: center;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .question-header-right {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Source */
+    .question-source {
+      font-size: 8px;
+      color: #6b7280;
+      font-style: italic;
+      text-align: right;
+      margin: 4px 0 5px;
+      line-height: 1.3;
+    }
+
+    /* Stem */
+    .question-stem {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #111827;
+      margin: 0 0 5px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .question-stem img {
+      display: inline-block;
+      max-width: 36%;
+      max-height: 42px;
+      width: auto;
+      height: auto;
+      vertical-align: middle;
+      margin: 2px 4px;
+      object-fit: contain;
+    }
+
+    /* Diagrama/figura grande no texto: respeita a proporção natural */
+    .question-stem img.img-diagram {
+      display: block;
+      max-width: 92%;
+      max-height: 210px;
+      height: auto;
+      width: auto;
+      margin: 7px auto;
+      vertical-align: initial;
+      object-fit: contain;
+    }
+
+    .question-stem img.img-tiny {
+      max-height: 1700px;
+      max-width: 100%;
+    }
+
+    /* Standalone question image */
+    .question-image {
+      display: block;
+      max-width: 90%;
+      max-height: 200px;
+      width: auto;
+      height: auto;
+      margin: 6px auto;
+      object-fit: contain;
+    }
+
+    .question-image.img-tiny {
+      max-width: 100%;
+      max-height: 1700px;
+    }
+
+    /* Sub-enunciado */
+    .question-sub {
+      font-size: 10.5px;
+      line-height: 1.45;
+      color: #1f2937;
+      margin: 3px 0 5px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Divider between stem and alternatives */
+    .divider {
+      height: 1px;
+      background: #d1d5db;
+      margin: 7px 0 6px;
+    }
+
+    /* ============================================================
+       ALTERNATIVES
+    ============================================================ */
+    .options {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .options li {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 6px;
+      align-items: flex-start;
+      font-size: 10.5px;
+      line-height: 1.42;
+      color: #111827;
+    }
+
+    .options li.has-image {
+      font-size: 10px;
+    }
+
+    .opt-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1.5px solid #111827;
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #111827;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .option-text {
+      display: inline;
+      padding-top: 1px;
+    }
+
+    .option-image {
+      display: block;
+      max-width: 88%;
+      max-height: 100px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      margin: 3px 0;
+    }
+
+    .option-image.img-small {
+      max-width: 88%;
+      max-height: 100px;
+    }
+
+    .option-image.img-natural {
+      max-width: 88%;
+      max-height: 100px;
+    }
+
+    /* ============================================================
+       GABARITO PAGES
+    ============================================================ */
+    .gabarito-body-inner {
+      width: 100%;
+      padding-top: 6px;
+    }
+
+    .gabarito-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      color: #0e2d5a;
+      margin: 0 0 10px;
+    }
+
+    .gabarito-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 14px;
+      width: 100%;
+    }
+
+    .gabarito-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      table-layout: fixed;
+    }
+
+    .gabarito-table th {
+      background: #0e2d5a;
+      color: #e9f2ff;
+      text-align: center;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 5px 4px;
+      border-bottom: 1px solid #0a2247;
+    }
+
+    .gabarito-table td {
+      text-align: center;
+      padding: 4px 4px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    .gabarito-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .gab-num {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #0e2d5a;
+    }
+
+    .gab-answer-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #0e2d5a;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .gab-answer-dash {
+      color: #9ca3af;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .gab-disc {
+      font-size: 8px;
+      font-weight: 600;
+      color: #374151;
+      letter-spacing: 0.02em;
+    }
+
+    .gab-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .gab-chip.facil {
+      background: rgba(34, 197, 94, 0.14);
+      color: #15803d;
+      border-color: rgba(34, 197, 94, 0.55);
+    }
+
+    .gab-chip.medio {
+      background: rgba(234, 179, 8, 0.16);
+      color: #a16207;
+      border-color: rgba(234, 179, 8, 0.55);
+    }
+
+    .gab-chip.dificil {
+      background: rgba(239, 68, 68, 0.13);
+      color: #b91c1c;
+      border-color: rgba(239, 68, 68, 0.55);
+    }
+
+    .gab-chip.unknown {
+      background: #f1f5f9;
+      color: #6b7280;
+      border-color: #d1d5db;
+    }
+
+    /* ============================================================
+       PRINT STYLES
+    ============================================================ */
+
+    /* Remove margens padrão do browser (Safari adiciona ~12mm por padrão, o que
+       força reescalonamento e desalinha o layout A4). Nosso padding de 13mm já
+       está dentro de cada .page. */
+    @page {
+      margin: 0;
+      size: A4 portrait;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      .download-toolbar {
+        display: none !important;
+      }
+
+      .pages-root {
+        gap: 0;
+        width: 210mm;
+        margin: 0 auto;
+      }
+
+      /* Cada .page corresponde a exatamente uma página A4.
+         overflow: hidden garante que nada transborda para a próxima página.
+         contain: strict diz ao motor de impressão (Chrome e Safari/WebKit) que
+         este elemento é uma unidade completamente isolada: layout, paint e size
+         são auto-contidos. Isso impede o motor de inserir espaços internos para
+         acomodar sua própria lógica de paginação — principal causa dos gaps
+         incorretos no Safari. */
+      .page {
+        box-shadow: none !important;
+        border-radius: 0;
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 13mm;
+        page-break-after: always;
+        break-after: page;
+        overflow: hidden;
+        position: relative;
+        contain: strict;
+      }
+
+      .page.last-page,
+      .page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      /* Cores exatas na impressão */
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* Elementos internos da página podem mostrar todo o conteúdo */
+      .page-body,
+      .column,
+      .question-block,
+      .options,
+      .gabarito-body-inner,
+      .gabarito-cols {
+        overflow: visible;
+      }
+
+      .column {
+        display: block;
+      }
+
+      /* Tipografia */
+      .question-stem {
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+      }
+
+      .question-sub {
+        font-size: 10.5px !important;
+        line-height: 1.42 !important;
+      }
+
+      .options li {
+        font-size: 10.5px !important;
+        line-height: 1.42 !important;
+      }
+
+      .options li.has-image {
+        font-size: 10px !important;
+      }
+
+      /* Imagens — sem page-break-inside para não criar espaços fantasma */
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .question-stem img.img-diagram {
+        max-width: 92%;
+        max-height: 210px;
+      }
+
+      .option-image {
+        max-width: 88%;
+        max-height: 100px;
+        height: auto;
+        display: block;
+        object-fit: contain;
+      }
+
+      /* Paginação é manual (JS); .page tem overflow:hidden.
+         orphans/widows padrão (2) fazem o Chrome inserir espaço em branco para
+         "proteger" linhas no topo/base de páginas virtuais — gerando o gap entre
+         enunciado e alternativas. Zeramos aqui.
+         NÃO alterar display de .question-block: flex layout impede margin collapsing
+         entre filhos, tornando os blocos mais altos na impressão do que o JS mediu
+         na tela (block layout), gerando overflow e corte de questões. */
+      * {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+        orphans: 1 !important;
+        widows: 1 !important;
+      }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 860px) {
+      body {
+        padding-top: 92px;
+      }
+
+      .download-toolbar {
+        width: calc(100% - 20px);
+        justify-content: center;
+      }
+
+      .download-hint {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="download-toolbar" role="region" aria-label="Download do documento">
+    <button id="download-doc-btn" class="download-badge-btn" type="button">Baixar PDF</button>
+    <p class="download-hint">Na janela que abrir, selecione <strong>Salvar como PDF</strong>.</p>
+    <div class="toolbar-divider"></div>
+    <div class="zoom-controls">
+      <button class="zoom-btn" id="zoom-out-btn" title="Diminuir zoom">−</button>
+      <span class="zoom-label" id="zoom-label">120%</span>
+      <button class="zoom-btn" id="zoom-in-btn" title="Aumentar zoom">+</button>
+    </div>
+  </div>
+  <div id="pages-root" class="pages-root"></div>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../authGuard.js"></script>
+  <script>
+    const { createClient } = window.supabase || {};
+    const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+    const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+    const mmToPx = (mm) => (mm * 96) / 25.4;
+    const PRINT_SAFETY_PX = mmToPx(6);
+
+    const supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    // Disponibiliza para o authGuard
+    window.supabaseClient = supabaseClient;
+    const adminGuardPromise = enforceAdminGuard();
+    const MAX_QUESTOES = 1000;
+    const MIN_SCALE = 0.5;
+    let IS_PRINT_MODE = false;
+
+    const pagesRoot = document.getElementById("pages-root");
+    const downloadDocBtn = document.getElementById("download-doc-btn");
+
+    function loadLista() {
+      const raw = localStorage.getItem("lista-diagramacao");
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch (err) {
+        console.error("[Diagramação] Erro ao ler lista-diagramacao:", err);
+        return null;
+      }
+    }
+
+    function formatModalidade(modalidade) {
+      if (!modalidade) return "";
+      return modalidade.toString().replace(/_/g, " ").trim().toUpperCase();
+    }
+
+    function formatInstituicao(modalidade, ano) {
+      const mod = formatModalidade(modalidade);
+      if (mod && ano) return mod + " " + ano;
+      if (mod) return mod;
+      if (ano) return "ANO " + ano;
+      return "";
+    }
+
+    function sanitizeHtmlAllowImages(html) {
+      if (!html) return "";
+      const template = document.createElement("template");
+      template.innerHTML = html;
+      template.content.querySelectorAll("script, style, iframe, object, embed").forEach((el) => el.remove());
+      template.content.querySelectorAll("*").forEach((el) => {
+        Array.from(el.attributes).forEach((attr) => {
+          const name = attr.name.toLowerCase();
+          if (name.startsWith("on")) {
+            el.removeAttribute(attr.name);
+          }
+        });
+      });
+      return template.innerHTML;
+    }
+
+    function escapeLooseAnglesPreserveTags(content) {
+      const raw = typeof content === "string" ? content : String(content || "");
+      if (!raw) return "";
+      const tagPattern = /^<\/?[a-z][\w:-]*(?:\s[^<>]*?)?>/i;
+      let result = "";
+      let index = 0;
+
+      while (index < raw.length) {
+        const char = raw[index];
+        if (char !== "<") {
+          result += char;
+          index += 1;
+          continue;
+        }
+
+        const rest = raw.slice(index);
+        const tagMatch = rest.match(tagPattern);
+        if (tagMatch) {
+          result += tagMatch[0];
+          index += tagMatch[0].length;
+          continue;
+        }
+
+        result += "&lt;";
+        index += 1;
+      }
+
+      return result;
+    }
+
+    function setSafeRichContent(element, content) {
+      if (!element) return;
+      const raw = typeof content === "string" ? content : String(content || "");
+      if (!raw) {
+        element.textContent = "";
+        return;
+      }
+      element.innerHTML = sanitizeHtmlAllowImages(escapeLooseAnglesPreserveTags(raw));
+    }
+
+    function applyImageSizing(img) {
+      if (!img) return;
+      const update = () => {
+        const w = img.naturalWidth || 0;
+        const h = img.naturalHeight || 0;
+        const isNatural = w >= 50 && h >= 50;
+        const isQuestionImage = img.classList.contains("question-image");
+        const isStemImage = img.closest(".question-stem") !== null;
+        const isTinyQuestionImage = isQuestionImage && w > 0 && h > 0 && w < 64 && h < 64;
+        // Diagrama = imagem grande no texto (gráfico, tabela, mapa etc.)
+        // Fórmula  = imagem pequena no texto (fração, símbolo, equação)
+        const isStemDiagram = isStemImage && w > 0 && h > 0 && (w > 220 || h > 85);
+        img.classList.toggle("img-natural", isNatural);
+        img.classList.toggle("img-small", !isNatural);
+        img.classList.toggle("img-diagram", isStemDiagram);
+        img.classList.toggle("img-tiny", isTinyQuestionImage);
+      };
+      if (img.complete) {
+        update();
+      } else {
+        img.addEventListener("load", update, { once: true });
+        img.addEventListener("error", () => {
+          img.classList.add("img-small");
+          img.classList.remove("img-diagram");
+          img.classList.remove("img-tiny");
+        }, { once: true });
+      }
+    }
+
+    function applyImageSizingToContainer(root) {
+      if (!root) return;
+      root.querySelectorAll("img").forEach((img) => applyImageSizing(img));
+    }
+
+    function waitForImages(root) {
+      const imgs = Array.prototype.slice.call(root.querySelectorAll("img"));
+      if (!imgs.length) return Promise.resolve();
+      return Promise.all(
+        imgs.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      );
+    }
+
+    /* ============================================================
+       createPage — new ENEM-faithful design
+       Returns { page, header, body, columns: [col1, col2], badge }
+    ============================================================ */
+    function createPage(pageNumber, listTitle, withColSep = true) {
+      const page = document.createElement("section");
+      page.className = "page";
+
+      // --- Header ---
+      const header = document.createElement("div");
+      header.className = "page-header";
+
+      // Brand left
+      const brandWrap = document.createElement("div");
+      brandWrap.className = "page-header-brand";
+      const brandIcon = document.createElement("img");
+      brandIcon.className = "brand-icon";
+      brandIcon.src = "../imagens/integral-black-logo.png";
+      brandIcon.alt = "Integral ENEM";
+      const brandName = document.createElement("span");
+      brandName.className = "brand-name";
+      brandName.textContent = "Integral ENEM";
+      brandWrap.appendChild(brandIcon);
+      brandWrap.appendChild(brandName);
+
+      // Title center
+      const titleEl = document.createElement("div");
+      titleEl.className = "page-header-title";
+      titleEl.textContent = listTitle || "Lista de Questões";
+
+      // Right: page number badge
+      const rightWrap = document.createElement("div");
+      rightWrap.className = "page-header-right";
+      const badge = document.createElement("div");
+      badge.className = "page-badge";
+      badge.textContent = "Página " + pageNumber;
+      rightWrap.appendChild(badge);
+
+      header.appendChild(brandWrap);
+      header.appendChild(titleEl);
+      header.appendChild(rightWrap);
+
+      // --- Header divider ---
+      const dividerLine = document.createElement("div");
+      dividerLine.className = "page-header-divider";
+
+      // --- Body: 2-column grid ---
+      const body = document.createElement("div");
+      body.className = "page-body";
+
+      const col1 = document.createElement("div");
+      col1.className = "column";
+
+      const colSep = document.createElement("div");
+      colSep.className = "col-sep";
+
+      const col2 = document.createElement("div");
+      col2.className = "column";
+
+      if (withColSep) {
+        body.appendChild(col1);
+        body.appendChild(colSep);
+        body.appendChild(col2);
+      } else {
+        body.classList.add("page-body--single");
+        body.appendChild(col1);
+      }
+
+      page.appendChild(header);
+      page.appendChild(dividerLine);
+      page.appendChild(body);
+
+      return { page, header, body, columns: [col1, col2], badge };
+    }
+
+    /* ============================================================
+       createQuestionBlock — ENEM-style with opt-letter spans
+    ============================================================ */
+    function createQuestionBlock(question, index) {
+      const block = document.createElement("article");
+      block.className = "question-block";
+
+      // Header bar
+      const header = document.createElement("div");
+      header.className = "question-header";
+
+      const headerLeft = document.createElement("span");
+      headerLeft.className = "question-header-left";
+      const questionNum = String(index + 1).padStart(2, "0");
+      headerLeft.textContent = "QUESTÃO " + questionNum;
+
+      const headerCenter = document.createElement("span");
+      headerCenter.className = "question-header-center";
+      const instituicao = formatInstituicao(question.modalidade, question.ano);
+      headerCenter.textContent = instituicao || "";
+
+      const headerRight = document.createElement("span");
+      headerRight.className = "question-header-right";
+      headerRight.textContent = (question.disciplina || "").toString().toUpperCase();
+
+      header.appendChild(headerLeft);
+      header.appendChild(headerCenter);
+      if (question.disciplina) header.appendChild(headerRight);
+      block.appendChild(header);
+
+      // Enunciado
+      if (question.enunciado) {
+        const stem = document.createElement("div");
+        stem.className = "question-stem";
+        setSafeRichContent(stem, question.enunciado);
+        block.appendChild(stem);
+        applyImageSizingToContainer(stem);
+      }
+
+      if (question.imagem_url) {
+        const qImg = document.createElement("img");
+        qImg.className = "question-image";
+        qImg.src = question.imagem_url;
+        qImg.alt = "Imagem da questão " + (index + 1);
+        block.appendChild(qImg);
+        applyImageSizing(qImg);
+      }
+
+      if (question.sub_enunciado) {
+        const sub = document.createElement("div");
+        sub.className = "question-sub";
+        sub.textContent = question.sub_enunciado;
+        block.appendChild(sub);
+      }
+
+      if (question.fonte) {
+        const fonte = document.createElement("div");
+        fonte.className = "question-source";
+        fonte.textContent = question.fonte;
+        block.appendChild(fonte);
+      }
+
+      const divider = document.createElement("div");
+      divider.className = "divider";
+      block.appendChild(divider);
+
+      // Alternativas
+      if (Array.isArray(question.alternativas) && question.alternativas.length) {
+        const list = document.createElement("ol");
+        list.className = "options";
+
+        question.alternativas.slice(0, 5).forEach((alt, idx) => {
+          const li = document.createElement("li");
+
+          const letterSpan = document.createElement("span");
+          letterSpan.className = "opt-letter";
+          letterSpan.textContent = String.fromCharCode(65 + idx);
+          li.appendChild(letterSpan);
+
+          if (alt && alt.imageUrl) {
+            li.classList.add("has-image");
+            const img = document.createElement("img");
+            img.className = "option-image";
+            img.src = alt.imageUrl;
+            img.alt = "Alternativa " + String.fromCharCode(65 + idx);
+            li.appendChild(img);
+            applyImageSizing(img);
+          } else {
+            li.classList.add("text-only");
+            const text = alt && typeof alt.text === "string" ? alt.text : (alt || "");
+            const span = document.createElement("span");
+            span.className = "option-text";
+            span.textContent = text;
+            li.appendChild(span);
+          }
+
+          list.appendChild(li);
+        });
+
+        block.appendChild(list);
+      }
+
+      return block;
+    }
+
+    /* ============================================================
+       createMeasurementEnv — updated safety
+    ============================================================ */
+    function createMeasurementEnv(listTitle, withColSep = true) {
+      const meas = createPage(1, listTitle, withColSep);
+      meas.page.style.position = "absolute";
+      meas.page.style.visibility = "hidden";
+      meas.page.style.left = "-99999px";
+      meas.page.style.top = "0";
+      document.body.appendChild(meas.page);
+      const rawHeight =
+        meas.body?.getBoundingClientRect().height ||
+        meas.columns[0]?.clientHeight ||
+        meas.body?.clientHeight ||
+        0;
+      const safety = IS_PRINT_MODE ? PRINT_SAFETY_PX * 1.5 : PRINT_SAFETY_PX;
+      return {
+        measurePage: meas,
+        measureColumn: meas.columns[0],
+        maxColumnHeight: Math.max(0, rawHeight - safety),
+        dispose() { meas.page.remove(); }
+      };
+    }
+
+    function normalizeDifficulty(diffRaw) {
+      if (!diffRaw) return "";
+      const norm = diffRaw
+        .toString()
+        .trim()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase();
+      return norm;
+    }
+
+    /* ============================================================
+       createGabaritoPage — 2-column table layout, compact
+       40 rows per half = 80 per page
+    ============================================================ */
+    const GABARITO_ROWS_PER_PAGE = 40;
+
+    function createGabaritoPage(questions, listTitle, pageNumber, startIndex) {
+      const { page, body, badge } = createPage(pageNumber, listTitle, false);
+      body.innerHTML = "";
+      body.classList.add("page-body--single");
+
+      const inner = document.createElement("div");
+      inner.className = "gabarito-body-inner";
+
+      const title = document.createElement("div");
+      title.className = "gabarito-title";
+      title.textContent = "GABARITO OFICIAL";
+      inner.appendChild(title);
+
+      // Split questions into two halves for side-by-side tables
+      const half = Math.ceil(questions.length / 2);
+      const leftQs = questions.slice(0, half);
+      const rightQs = questions.slice(half);
+
+      const colsWrapper = document.createElement("div");
+      colsWrapper.className = "gabarito-cols";
+
+      [leftQs, rightQs].forEach((group, groupIdx) => {
+        const table = document.createElement("table");
+        table.className = "gabarito-table";
+
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        ["Questão", "Gabarito", "Disciplina", "Dificuldade"].forEach((text) => {
+          const th = document.createElement("th");
+          th.textContent = text;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+
+        group.forEach((q, idx) => {
+          const globalIdx = (startIndex || 0) + (groupIdx === 0 ? idx : half + idx);
+          const tr = document.createElement("tr");
+
+          // Questão number
+          const tdNum = document.createElement("td");
+          const numSpan = document.createElement("span");
+          numSpan.className = "gab-num";
+          numSpan.textContent = String(globalIdx + 1).padStart(2, "0");
+          tdNum.appendChild(numSpan);
+          tr.appendChild(tdNum);
+
+          // Gabarito (answer circle or dash)
+          const tdGab = document.createElement("td");
+          const ans = q.gabarito ? q.gabarito.toString().trim().toUpperCase() : "";
+          if (ans) {
+            const circle = document.createElement("span");
+            circle.className = "gab-answer-circle";
+            circle.textContent = ans;
+            tdGab.appendChild(circle);
+          } else {
+            const dash = document.createElement("span");
+            dash.className = "gab-answer-dash";
+            dash.textContent = "—";
+            tdGab.appendChild(dash);
+          }
+          tr.appendChild(tdGab);
+
+          // Disciplina
+          const tdDisc = document.createElement("td");
+          const discSpan = document.createElement("span");
+          discSpan.className = "gab-disc";
+          discSpan.textContent = (q.disciplina || "—").toString().toUpperCase();
+          tdDisc.appendChild(discSpan);
+          tr.appendChild(tdDisc);
+
+          // Dificuldade chip
+          const tdDif = document.createElement("td");
+          const norm = normalizeDifficulty(q.dificuldade);
+          const chip = document.createElement("span");
+          chip.className = "gab-chip";
+          if (norm === "facil") {
+            chip.classList.add("facil");
+            chip.textContent = "FÁCIL";
+          } else if (norm === "medio" || norm === "media") {
+            chip.classList.add("medio");
+            chip.textContent = "MÉDIA";
+          } else if (norm === "dificil") {
+            chip.classList.add("dificil");
+            chip.textContent = "DIFÍCIL";
+          } else {
+            chip.classList.add("unknown");
+            chip.textContent = q.dificuldade ? q.dificuldade.toString().toUpperCase() : "—";
+          }
+          tdDif.appendChild(chip);
+          tr.appendChild(tdDif);
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        colsWrapper.appendChild(table);
+      });
+
+      inner.appendChild(colsWrapper);
+      body.appendChild(inner);
+
+      return { page, badge };
+    }
+
+    function createGabaritoPages(questions, listTitle, startPageNumber) {
+      const pages = [];
+      for (let i = 0; i < questions.length; i += GABARITO_ROWS_PER_PAGE * 2) {
+        const slice = questions.slice(i, i + GABARITO_ROWS_PER_PAGE * 2);
+        pages.push(
+          createGabaritoPage(
+            slice,
+            listTitle,
+            startPageNumber + pages.length,
+            i
+          )
+        );
+      }
+      return pages;
+    }
+
+    function isPageEmpty(pageObj) {
+      return pageObj.columns.every((col) => col.childElementCount === 0);
+    }
+
+    async function hydrateFromSupabase(savedQuestions) {
+      if (!supabaseClient) return savedQuestions;
+      const ids = savedQuestions.map((q) => q.id).filter(Boolean);
+      if (!ids.length) return savedQuestions;
+      const uniqueIds = Array.from(new Set(ids)).slice(0, MAX_QUESTOES);
+      const { data, error } = await supabaseClient
+        .from("questions")
+        .select(`
+          id, ano, modalidade, disciplina, dificuldade,
+          enunciado, sub_enunciado, imagem_url, fonte,
+          alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e,
+          alternativa_a_imagem_url, alternativa_b_imagem_url, alternativa_c_imagem_url,
+          alternativa_d_imagem_url, alternativa_e_imagem_url,
+          gabarito, gabarito_comentado
+        `)
+        .in("id", uniqueIds);
+
+      if (error) {
+        await handleSupabaseAuthError(error, supabaseClient);
+        console.warn("[Diagramação] Falha ao atualizar questões via Supabase:", error);
+        return savedQuestions;
+      }
+
+      const map = new Map();
+      (data || []).forEach((row) => map.set(row.id, row));
+
+      return savedQuestions.map((q) => map.get(q.id) ? { ...q, ...map.get(q.id) } : q);
+    }
+
+    async function fetchFromFilters(filters) {
+      if (!supabaseClient || !Array.isArray(filters) || !filters.length) return [];
+      const collected = [];
+
+      for (const item of filters) {
+        let query = supabaseClient
+          .from("questions")
+          .select(`
+            id, ano, modalidade, disciplina, dificuldade,
+            enunciado, sub_enunciado, imagem_url, fonte,
+            alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e,
+            alternativa_a_imagem_url, alternativa_b_imagem_url, alternativa_c_imagem_url,
+            alternativa_d_imagem_url, alternativa_e_imagem_url,
+            gabarito, gabarito_comentado
+          `);
+
+        if (item.disciplina) query = query.eq("disciplina", item.disciplina);
+        if (item.modalidade) query = query.eq("modalidade", item.modalidade);
+        if (item.ano) query = query.eq("ano", Number(item.ano));
+        if (item.dificuldade) query = query.eq("dificuldade", item.dificuldade);
+        if (item.busca) query = query.ilike("enunciado", `%${item.busca}%`);
+
+        const { data, error } = await query.limit(Math.max(item.quantidade || 0, 120));
+        if (error) {
+          await handleSupabaseAuthError(error, supabaseClient);
+          continue;
+        }
+
+        const quantidade = item.quantidade && item.quantidade > 0 ? Number(item.quantidade) : data.length;
+        collected.push(...data.slice(0, quantidade));
+        if (collected.length >= MAX_QUESTOES) break;
+      }
+
+      return collected.slice(0, MAX_QUESTOES);
+    }
+
+    async function obterQuestoes(payload) {
+      if (!payload) return [];
+      const questoesSalvas = Array.isArray(payload.questoes) ? payload.questoes.slice(0, MAX_QUESTOES) : [];
+
+      if (questoesSalvas.length) {
+        return hydrateFromSupabase(questoesSalvas);
+      }
+
+      const questoesBuscadas = await fetchFromFilters(payload.itens || []);
+      return questoesBuscadas;
+    }
+
+    function convertAlternativas(q) {
+      return [
+        { text: q.alternativa_a, imageUrl: q.alternativa_a_imagem_url || null },
+        { text: q.alternativa_b, imageUrl: q.alternativa_b_imagem_url || null },
+        { text: q.alternativa_c, imageUrl: q.alternativa_c_imagem_url || null },
+        { text: q.alternativa_d, imageUrl: q.alternativa_d_imagem_url || null },
+        { text: q.alternativa_e, imageUrl: q.alternativa_e_imagem_url || null },
+      ];
+    }
+
+    function adaptQuestion(row) {
+      return {
+        id: row.id,
+        enunciado: row.enunciado || "",
+        sub_enunciado: row.sub_enunciado || "",
+        imagem_url: row.imagem_url || "",
+        fonte: row.fonte || "",
+        modalidade: row.modalidade,
+        ano: row.ano,
+        disciplina: row.disciplina,
+        dificuldade: row.dificuldade,
+        alternativas: convertAlternativas(row),
+        gabarito: row.gabarito || "",
+        gabarito_comentado: row.gabarito_comentado || ""
+      };
+    }
+
+    function renderEmpty(message) {
+      pagesRoot.innerHTML = "";
+      const div = document.createElement("div");
+      div.className = "empty-state";
+      div.textContent = message;
+      pagesRoot.appendChild(div);
+    }
+
+    async function measureBlocks(blocks, measureColumn) {
+      const clones = blocks.map((b) => b.cloneNode(true));
+      clones.forEach((clone) => measureColumn.appendChild(clone));
+      await waitForImages(measureColumn);
+      // As classes de classificação de imagem (img-diagram, img-tiny etc.) são
+      // aplicadas de forma assíncrona ao carregar — cloneNode() não as copia
+      // porque o clone é feito antes do load do original. Sem reaplicar aqui,
+      // a medição usa o CSS "padrão" (ex.: 42px para imagem de enunciado) em vez
+      // do real (ex.: 210px para diagrama), subestimando a altura e cortando a
+      // questão quando ela é renderizada de verdade na página final.
+      clones.forEach((clone) => applyImageSizingToContainer(clone));
+      const measurements = clones.map((clone) => {
+        const rect = clone.getBoundingClientRect();
+        const styles = window.getComputedStyle(clone);
+        const marginTop = parseFloat(styles.marginTop) || 0;
+        const marginBottom = parseFloat(styles.marginBottom) || 0;
+        return {
+          baseHeight: rect.height,
+          marginTop,
+          marginBottom,
+          height: rect.height + marginTop + marginBottom
+        };
+      });
+      clones.forEach((clone) => clone.remove());
+      return measurements;
+    }
+
+    async function paginateQuestions(questions, listTitle) {
+      const blocks = questions.map((q, idx) => createQuestionBlock(q, idx));
+      if (!blocks.length) {
+        renderEmpty("Nenhuma questão encontrada para diagramar.");
+        return;
+      }
+
+      const meas = createMeasurementEnv(listTitle);
+      const blockMeasures = await measureBlocks(blocks, meas.measureColumn);
+
+      // Questões cuja altura medida (a 2 colunas) excede uma coluna vazia
+      // inteira não cabem em nenhuma coluna, de jeito nenhum — remedi-las na
+      // largura total da página (só 1 coluna) costuma bastar, já que o texto
+      // reflui com menos quebras de linha. Sem isso, essas questões eram
+      // forçadas numa coluna vazia mesmo sem caber e tinham o final cortado
+      // pelo overflow:hidden da página.
+      const oversizedIdx = blockMeasures
+        .map((m, i) => (m.height > meas.maxColumnHeight ? i : -1))
+        .filter((i) => i !== -1);
+
+      const fullWidthHeights = new Map();
+      if (oversizedIdx.length) {
+        const measSingle = createMeasurementEnv(listTitle, false);
+        const oversizedMeasures = await measureBlocks(
+          oversizedIdx.map((i) => blocks[i]),
+          measSingle.measureColumn
+        );
+        oversizedIdx.forEach((blockIdx, k) => {
+          fullWidthHeights.set(blockIdx, oversizedMeasures[k].height);
+          if (oversizedMeasures[k].height > measSingle.maxColumnHeight) {
+            console.warn(
+              "[Diagramação] Questão " + (blockIdx + 1) + " excede até a página em largura total; " +
+              "o conteúdo pode ser cortado na impressão."
+            );
+          }
+        });
+        measSingle.dispose();
+      }
+
+      const pages = [];
+      let currentPage = createPage(1, listTitle);
+      let colHeights = [0, 0];
+      let colIndex = 0;
+
+      const pushPageIfNotEmpty = () => {
+        if (!isPageEmpty(currentPage)) {
+          pages.push(currentPage);
+        }
+      };
+
+      const placeBlock = (block, height, targetCol) => {
+        currentPage.columns[targetCol].appendChild(block);
+        colHeights[targetCol] += height;
+        colIndex = targetCol;
+      };
+
+      blocks.forEach((block, idx) => {
+        if (fullWidthHeights.has(idx)) {
+          // Questão grande demais para uma coluna: página dedicada, largura total.
+          pushPageIfNotEmpty();
+          const dedicated = createPage(pages.length + 1, listTitle, false);
+          dedicated.columns[0].appendChild(block);
+          pages.push(dedicated);
+          currentPage = createPage(pages.length + 1, listTitle);
+          colHeights = [0, 0];
+          colIndex = 0;
+          return;
+        }
+
+        const blockHeight = blockMeasures[idx].height;
+        let placed = false;
+
+        while (!placed) {
+          const available = Math.max(0, meas.maxColumnHeight - colHeights[colIndex]);
+
+          if (blockHeight <= available || colHeights[colIndex] === 0) {
+            // Fits in current column
+            placeBlock(block, blockHeight, colIndex);
+            placed = true;
+          } else if (colIndex === 0) {
+            // Left column full → try right
+            colIndex = 1;
+          } else {
+            // Both columns full → new page
+            pushPageIfNotEmpty();
+            currentPage = createPage(pages.length + 1, listTitle);
+            colHeights = [0, 0];
+            colIndex = 0;
+          }
+        }
+      });
+
+      pushPageIfNotEmpty();
+      meas.dispose();
+      return pages;
+    }
+
+    async function initDiagramacao() {
+      await adminGuardPromise;
+      const payload = loadLista();
+      if (!payload) {
+        renderEmpty("Nenhuma lista salva. Crie uma lista em gerar-lista.html.");
+        return;
+      }
+
+      const listTitle = payload.titulo || "Lista de Questões";
+      const questoesBrutas = await obterQuestoes(payload);
+      if (!questoesBrutas || !questoesBrutas.length) {
+        renderEmpty("Nenhuma questão retornada pelo Supabase para esta lista.");
+        return;
+      }
+
+      const questoes = questoesBrutas.slice(0, MAX_QUESTOES).map(adaptQuestion);
+
+      const pages = await paginateQuestions(questoes, listTitle);
+      if (!pages || !pages.length) {
+        renderEmpty("Não foi possível montar as páginas.");
+        return;
+      }
+
+      pagesRoot.innerHTML = "";
+      pages.forEach((pg, idx) => {
+        const label = IS_PRINT_MODE ? "PÁGINA " : "Página ";
+        pg.badge.textContent = label + (idx + 1);
+        pagesRoot.appendChild(pg.page);
+      });
+
+      const gabaritoPages = createGabaritoPages(questoes, listTitle, pages.length + 1);
+      gabaritoPages.forEach((gp) => {
+        if (gp.badge) {
+          gp.badge.textContent = "GABARITO";
+        }
+        pagesRoot.appendChild(gp.page);
+      });
+
+      pruneEmptyPages();
+      markLastPage();
+    }
+
+    function pruneEmptyPages() {
+      const pages = Array.from(pagesRoot.querySelectorAll(".page"));
+      pages.forEach((pg) => {
+        const body = pg.querySelector(".page-body");
+        const isEmpty =
+          body &&
+          !body.querySelector(".question-block") &&
+          !body.querySelector(".gabarito-table");
+        if (isEmpty && pg.parentNode) {
+          pg.parentNode.removeChild(pg);
+        }
+      });
+    }
+
+    function markLastPage() {
+      const pages = Array.from(pagesRoot.querySelectorAll(".page"));
+      pages.forEach((pg) => pg.classList.remove("last-page"));
+      const last = pages[pages.length - 1];
+      if (last) last.classList.add("last-page");
+    }
+
+    function setupPrintReload() {
+      // Recarrega a página após fechar a caixa de impressão para restaurar o modo de visualização
+      const reload = () => window.location.reload();
+      window.addEventListener("afterprint", reload);
+      const mq = window.matchMedia && window.matchMedia("print");
+      if (mq && mq.addEventListener) {
+        mq.addEventListener("change", (e) => { if (!e.matches) reload(); });
+      } else if (mq && mq.addListener) {
+        mq.addListener((e) => { if (!e.matches) reload(); });
+      }
+    }
+
+    function waitNextFrame() {
+      return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    }
+
+    async function downloadPdfDirectly() {
+      // Reseta o zoom para que a impressão use o layout real (sem escala visual)
+      pagesRoot.style.zoom = 1;
+
+      // Re-renderiza em modo impressão (margens mais conservadoras, sem toolbar)
+      IS_PRINT_MODE = true;
+      await initDiagramacao();
+      markLastPage();
+      await waitForImages(pagesRoot);
+      await waitNextFrame();
+      await waitNextFrame();
+
+      // Usa o motor de impressão nativo do browser — qualidade e proporções idênticas ao CSS
+      window.print();
+      // O evento afterprint (em setupPrintReload) recarrega a página para restaurar o modo normal
+    }
+
+    function setupDownloadBadge() {
+      if (!downloadDocBtn) return;
+      downloadDocBtn.addEventListener("click", async () => {
+        if (downloadDocBtn.disabled) return;
+        downloadDocBtn.disabled = true;
+        downloadDocBtn.textContent = "Preparando...";
+        try {
+          await downloadPdfDirectly();
+        } catch (error) {
+          console.error("[Diagramação] Erro ao preparar impressão:", error);
+          alert("Não foi possível preparar a impressão. Tente novamente.");
+          downloadDocBtn.disabled = false;
+          downloadDocBtn.textContent = "Baixar PDF";
+        }
+        // Estado do botão é restaurado pelo reload do afterprint
+      });
+    }
+
+    let pageZoom = 1.2;
+    const ZOOM_STEP = 0.1;
+    const ZOOM_MIN = 0.5;
+    const ZOOM_MAX = 2.5;
+
+    function applyZoom(level) {
+      pageZoom = Math.round(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, level)) * 10) / 10;
+      pagesRoot.style.zoom = pageZoom;
+      const label = document.getElementById("zoom-label");
+      if (label) label.textContent = Math.round(pageZoom * 100) + "%";
+    }
+
+    function setupZoomControls() {
+      const zoomIn = document.getElementById("zoom-in-btn");
+      const zoomOut = document.getElementById("zoom-out-btn");
+      if (zoomIn) zoomIn.addEventListener("click", () => applyZoom(pageZoom + ZOOM_STEP));
+      if (zoomOut) zoomOut.addEventListener("click", () => applyZoom(pageZoom - ZOOM_STEP));
+      applyZoom(pageZoom);
+    }
+
+    document.addEventListener("DOMContentLoaded", initDiagramacao);
+    document.addEventListener("DOMContentLoaded", setupPrintReload);
+    document.addEventListener("DOMContentLoaded", setupDownloadBadge);
+    document.addEventListener("DOMContentLoaded", setupZoomControls);
+  </script>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>

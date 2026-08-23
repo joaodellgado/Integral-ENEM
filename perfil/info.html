@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="/global.css" />
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil | Integral ENEM</title>
+  <link rel="icon" href="/imagens/integral-logo.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
+  <link rel="manifest" href="/imagens/site.webmanifest">
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/navbar/navbar.css">
+  <link rel="stylesheet" href="/perfil/info.css">
+</head>
+<body>
+  <div id="navbar-root"></div>
+
+  <main class="profile-shell">
+    <div class="bg-accents">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="grid-lines"></div>
+    </div>
+
+    <section class="profile-card">
+      <header class="profile-header">
+        <div>
+          <p class="eyebrow">Área do Perfil</p>
+          <h1>Personalize seu perfil</h1>
+          <p class="subtitle">Atualize sua foto e como quer ser identificado.</p>
+        </div>
+        <div class="badge">BETA</div>
+      </header>
+
+      <div class="profile-content">
+        <div class="avatar-panel">
+          <div class="avatar-frame">
+            <button type="button" class="avatar-delete-btn" id="avatar-delete-btn" title="Remover avatar">
+              <img src="/imagens/white-trash.png" alt="Remover avatar" class="avatar-delete-icon avatar-delete-icon--light">
+              <img src="/imagens/white-trash.png" alt="" aria-hidden="true" class="avatar-delete-icon avatar-delete-icon--dark">
+            </button>
+            <img id="profile-avatar" src="/imagens/default-avatar.png" alt="Foto do administrador">
+            <div class="avatar-overlay">
+              <button type="button" class="ghost-btn" id="avatar-upload-btn">Carregar foto</button>
+              <input id="profile-photo-input" type="file" accept="image/jpeg,image/png" hidden>
+              <p class="helper">PNG ou JPG até 5MB</p>
+              <p class="file-warning" id="file-warning" style="display:none;"></p>
+            </div>
+          </div>
+          <div class="zoom-controls" id="zoom-controls">
+            <span>Zoom</span>
+            <div class="zoom-actions">
+              <button type="button" class="zoom-btn" id="zoom-out">-</button>
+              <input type="range" id="zoom-range" min="1" max="1.8" step="0.05" value="1">
+              <button type="button" class="zoom-btn" id="zoom-in">+</button>
+            </div>
+          </div>
+          <p class="pending-hint" id="pending-hint" style="display: none;">Alterações pendentes. Clique em "Salvar visual" para aplicar.</p>
+          <div class="avatar-preview">
+            <p class="label">Pré-visualização</p>
+            <div class="preview-card">
+              <div class="preview-left">
+                <div class="preview-avatar-wrap">
+                  <img id="preview-avatar-img" class="preview-avatar" src="/imagens/default-avatar.png" alt="Preview avatar">
+                </div>
+                <div class="preview-info">
+                  <span id="profile-name-display">Administrador</span>
+                  <small>Equipe Integral ENEM</small>
+                </div>
+              </div>
+              <span class="role-badge role-admin">ADMIN</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-panel">
+          <div class="field">
+            <label for="profile-name">Nome público</label>
+            <div class="input-wrap">
+              <input id="profile-name" type="text" maxlength="60" placeholder="Digite como quer aparecer">
+              <span class="char-count" id="name-count">0/60</span>
+            </div>
+            <small class="hint">Esse nome aparece nos dashboards e nos registros administrativos.</small>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="secondary-btn" id="reset-profile">Limpar</button>
+            <button type="button" class="primary-btn" id="save-profile">Salvar Visual</button>
+          </div>
+          <p class="disclaimer">Fique à vontade para personalizar o seu perfil!</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const { createClient } = window.supabase || {};
+      const SUPABASE_URL = window.__MM_CONFIG__?.supabaseUrl || "";
+      const SUPABASE_ANON_KEY = window.__MM_CONFIG__?.supabaseAnonKey || "";
+      window.supabaseClient = createClient ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    })();
+  </script>
+  <script src="/cache/profileCache.js"></script>
+  <script src="/navbar/navbar.js"></script>
+  <script src="/perfil/info.js"></script>
+  <script type="module">
+    import { startupApp } from "/dist/app/startup.js";
+    startupApp();
+  </script>
+</body>
+</html>
