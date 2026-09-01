@@ -1,47 +1,47 @@
 # Integral ENEM
 
-Plataforma web de estudos para o ENEM: banco de questões, listas personalizadas, flashcards, simulados, cronograma/calendário e um painel de acompanhamento de desempenho.
+A study platform for the ENEM (Brazil's national college entrance exam): question bank, custom question lists, flashcards, mock exams, a study calendar, and a dashboard to track progress.
 
-Este é meu primeiro projeto público de maior porte. Construí toda a interface em **HTML, CSS e JavaScript puros** — na época ainda não tinha experiência suficiente com frameworks para estruturar o projeto em cima de um, então optei por entender a fundo a plataforma web nativa antes de abstrair essa camada. O foco de aprendizado foi principalmente em:
+This is my first bigger public project. I built the whole interface in **plain HTML, CSS and JavaScript** — at the time I didn't have enough experience with frameworks to structure a project on top of one, so I chose to actually learn the native web platform before abstracting that layer away. What I focused on learning:
 
-- **Infraestrutura de cache de dados**: um mirror local em IndexedDB que mantém a aplicação funcional offline/com latência baixa, sincronizado com o backend por uma fila de eventos (padrão *outbox*) em vez de escrever direto no banco a cada interação.
-- **SQL e modelagem de dados**: schema relacional no Postgres (via Supabase), com Row Level Security controlando o acesso por usuário direto no banco.
-- **Sobrecarga de requisições e fluxo de dados**: a fila de sincronização agrupa mudanças em lotes por tamanho (bytes/quantidade de eventos), aplica backoff exponencial com limite de tentativas e deduplica/coalesce eventos redundantes antes de enviar — evitando disparar uma requisição a cada tecla digitada ou clique.
+- **Data caching**: a local IndexedDB mirror that keeps the app usable offline / with low latency, synced to the backend through an event queue (outbox pattern) instead of writing straight to the database on every interaction.
+- **SQL and data modeling**: a relational schema in Postgres (via Supabase), with Row Level Security controlling per-user access at the database level.
+- **Request overload and data flow**: the sync queue batches changes by size (bytes/event count), applies exponential backoff with a retry limit, and dedupes/coalesces redundant events before sending — instead of firing a request on every keystroke or click.
 
-Também foi o primeiro projeto em que usei IA (Codex e Claude) como copiloto de desenvolvimento de forma deliberada — não para escrever features no automático, mas para entender arquitetura, discutir trade-offs de design e aprender a conduzir um projeto inteiro através de prompts bem definidos.
+This was also the first project where I used AI (Codex and Claude) as a dev copilot on purpose — not to auto-generate features, but to understand architecture, discuss design trade-offs, and learn how to steer a whole project through well-written prompts.
 
-## Funcionalidades
+## Features
 
-- **Banco de questões** — busca e filtro por disciplina, ano, modalidade e dificuldade, com geração de listas personalizadas em PDF.
-- **Flashcards** — decks organizados por disciplina/tópico/subtópico, com geração automática de cartões a partir de PDFs/imagens usando a API do Google Gemini.
-- **Simulados** — registro de resultados por dia (Linguagens + Humanas / Matemática + Natureza) e classificação por nível de desempenho.
-- **Calendário e jornada** — planejamento semanal de estudos e acompanhamento de progresso ao longo do tempo.
-- **Painel geral** — métricas consolidadas: questões respondidas, taxa de acerto, horas de estudo e evolução por disciplina.
+- **Question bank** — search and filter by subject, year, exam format and difficulty, with custom PDF list generation.
+- **Flashcards** — decks organized by subject/topic/subtopic, with automatic card generation from PDFs/images using the Google Gemini API.
+- **Mock exams** — logs results per day (Languages + Humanities / Math + Sciences) and ranks performance level.
+- **Calendar and journey** — weekly study planning and progress tracking over time.
+- **Dashboard** — combined metrics: questions answered, accuracy rate, study hours, and progress per subject.
 
 ## Stack
 
-- **Frontend**: HTML/CSS/JavaScript puro, com módulos TypeScript para a camada de persistência local (`src/`).
-- **Persistência local**: IndexedDB como cache/mirror, com fila de sincronização (padrão outbox) para o backend.
+- **Frontend**: plain HTML/CSS/JavaScript, with TypeScript modules for the local persistence layer (`src/`).
+- **Local persistence**: IndexedDB as cache/mirror, with a sync queue (outbox pattern) to the backend.
 - **Backend**: [Supabase](https://supabase.com) (Postgres + Auth + Row Level Security + Storage).
-- **Funções serverless**: [Vercel](https://vercel.com) (`api/`), incluindo a integração com a API do Google Gemini para geração de flashcards.
+- **Serverless functions**: [Vercel](https://vercel.com) (`api/`), including the Google Gemini API integration for flashcard generation.
 
-## Rodando localmente
+## Running locally
 
-Pré-requisitos: Node.js e uma conta no [Supabase](https://supabase.com).
+Requirements: Node.js and a [Supabase](https://supabase.com) account.
 
 ```bash
 npm install
-npm run serve   # inicia o ambiente via Vercel CLI
+npm run serve   # starts the dev environment through the Vercel CLI
 ```
 
-Crie um arquivo `.env.local` na raiz do projeto com as variáveis abaixo (ou configure as mesmas chaves no dashboard da Vercel, em Settings → Environment Variables):
+Create a `.env.local` file in the project root with the variables below (or set the same keys in the Vercel dashboard, under Settings → Environment Variables):
 
-| Variável | Descrição |
+| Variable | Description |
 | --- | --- |
-| `SUPABASE_URL` | URL do projeto Supabase |
-| `SUPABASE_ANON_KEY` | Chave anônima pública do Supabase |
-| `GEMINI_API_KEY` | Chave da API do Google Gemini (geração de flashcards) |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase public anon key |
+| `GEMINI_API_KEY` | Google Gemini API key (flashcard generation) |
 
-## Licença
+## License
 
-Veja o arquivo [LICENSE](./LICENSE).
+See the [LICENSE](./LICENSE) file.
