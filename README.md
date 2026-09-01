@@ -8,6 +8,8 @@ Este é meu primeiro projeto público de maior porte. Construí toda a interface
 - **SQL e modelagem de dados**: schema relacional no Postgres (via Supabase), com Row Level Security controlando o acesso por usuário direto no banco.
 - **Sobrecarga de requisições e fluxo de dados**: a fila de sincronização agrupa mudanças em lotes por tamanho (bytes/quantidade de eventos), aplica backoff exponencial com limite de tentativas e deduplica/coalesce eventos redundantes antes de enviar — evitando disparar uma requisição a cada tecla digitada ou clique.
 
+Também foi o primeiro projeto em que usei IA (Codex e Claude) como copiloto de desenvolvimento de forma deliberada — não para escrever features no automático, mas para entender arquitetura, discutir trade-offs de design e aprender a conduzir um projeto inteiro através de prompts bem definidos.
+
 ## Funcionalidades
 
 - **Banco de questões** — busca e filtro por disciplina, ano, modalidade e dificuldade, com geração de listas personalizadas em PDF.
