@@ -2,6 +2,12 @@
 
 Plataforma web de estudos para o ENEM: banco de questões, listas personalizadas, flashcards, simulados, cronograma/calendário e um painel de acompanhamento de desempenho.
 
+Este é meu primeiro projeto público de maior porte. Construí toda a interface em **HTML, CSS e JavaScript puros** — na época ainda não tinha experiência suficiente com frameworks para estruturar o projeto em cima de um, então optei por entender a fundo a plataforma web nativa antes de abstrair essa camada. O foco de aprendizado foi principalmente em:
+
+- **Infraestrutura de cache de dados**: um mirror local em IndexedDB que mantém a aplicação funcional offline/com latência baixa, sincronizado com o backend por uma fila de eventos (padrão *outbox*) em vez de escrever direto no banco a cada interação.
+- **SQL e modelagem de dados**: schema relacional no Postgres (via Supabase), com Row Level Security controlando o acesso por usuário direto no banco.
+- **Sobrecarga de requisições e fluxo de dados**: a fila de sincronização agrupa mudanças em lotes por tamanho (bytes/quantidade de eventos), aplica backoff exponencial com limite de tentativas e deduplica/coalesce eventos redundantes antes de enviar — evitando disparar uma requisição a cada tecla digitada ou clique.
+
 ## Funcionalidades
 
 - **Banco de questões** — busca e filtro por disciplina, ano, modalidade e dificuldade, com geração de listas personalizadas em PDF.
