@@ -15,7 +15,7 @@ This was also the first project where I used AI (Codex and Claude) as a dev copi
 - **Question bank** — search and filter by subject, year, exam format and difficulty, with custom PDF list generation.
 - **Flashcards** — decks organized by subject/topic/subtopic, with automatic card generation from PDFs/images using the Google Gemini API (currently disabled in production, see [Live demo](#live-demo)).
 - **Mock exams** — logs results per day (Languages + Humanities / Math + Sciences) and ranks performance level.
-- **Calendar and journey** — weekly study planning and progress tracking over time.
+- **Calendar and journey** — an interactive personal schedule built directly on top of the official [ENEM Reference Matrix](https://download.inep.gov.br/enem/outros_documentos/enem_matriz_de_referencia_v1.pdf) (INEP), mapping study plans to the actual competencies and skills the exam evaluates, instead of a generic to-do list.
 - **Dashboard** — combined metrics: questions answered, accuracy rate, study hours, and progress per subject.
 
 ## Live demo
